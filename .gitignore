@@ -1,0 +1,17 @@
+# Deal Command: only website files belong in this repo.
+# Private shopping memory, research notes, profiles, tools and credentials stay out.
+memory/
+Profiles/
+tools/
+old_versions/
+*.docx
+*.xlsx
+deal-command-memory-*.json
+*.env
+.env*
+*.token
+*.key
+*credentials*
+Thumbs.db
+desktop.ini
+.DS_Store

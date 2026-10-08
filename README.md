@@ -13,10 +13,13 @@ Sam's personal deal dashboard. It is a plain website (one HTML page plus one dat
 
 ## Refreshing deals (the only regular task)
 
-1. Ask Claude on your computer to run a deal search. Claude rewrites `site/deals_data.js` in your Claude_Deal_Dashboard folder.
-2. Open this repo on github.com, click **Add file**, then **Upload files**.
-3. Drag in the new `deals_data.js` and click **Commit changes**.
-4. Cloudflare rebuilds the site by itself in about a minute. The top bar shows when the deals were last researched.
+1. Sam tells Claude: "Research new deals and publish ShoppingAddict."
+2. Claude researches and updates `deals_data.js` (and `index.html` if the design changed) directly in a local copy of this repo on Sam's computer.
+3. Claude shows what changed and waits for Sam's OK.
+4. Claude commits and pushes only the website files with GitHub Desktop.
+5. Cloudflare Pages rebuilds the site by itself in about a minute. Claude checks that the live site shows the new date. The top bar shows when the deals were last researched.
+
+Private shopping memory, research notes and Rachel's profile live in the separate `Claude_Deal_Dashboard` folder and are never published. `.gitignore` blocks them here too.
 
 Your hearts, target prices, carts, budgets, notes and gift picks are never touched by a refresh. They live in your browser, and every item has a fixed ID.
 
