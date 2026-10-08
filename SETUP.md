@@ -2,15 +2,11 @@
 
 About 15 minutes, done once. Cloudflare's button names change now and then, so look for the closest match if a label differs.
 
-## 1. Make the GitHub repo private
+## 1. Repo
 
-The site holds Rachel's sizes and gift plans, so the repo should not be public.
+The repo stays public (Sam's choice). Search engines are blocked by `_headers` and `robots.txt`.
 
-1. Open github.com/samuelbigdog-coder/ShoppingAddict
-2. Click **Settings**, scroll to **Danger Zone**, and click **Change visibility**
-3. Choose **Private** and confirm
-
-## 2. Add the site files to the repo
+## 2. Add the site files to the repo (already done Oct 7)
 
 Upload the four files from the `site` folder of your Claude_Deal_Dashboard folder: `index.html`, `deals_data.js`, `_headers`, `robots.txt`. Also upload `README.md`.
 
@@ -34,7 +30,7 @@ Upload the four files from the `site` folder of your Claude_Deal_Dashboard folde
 
 From now on, every upload to the repo updates the site automatically.
 
-## 4. Lock the site with Cloudflare Access (free)
+## 4. Optional: lock the site with Cloudflare Access (free)
 
 1. In the Cloudflare dashboard, open **Zero Trust**. The first time, pick a team name and the **Free** plan (free for up to 50 users). Cloudflare may ask for a card at signup even though the plan costs $0.
 2. Go to **Settings**, then **Authentication**, and make sure **One-time PIN** is turned on

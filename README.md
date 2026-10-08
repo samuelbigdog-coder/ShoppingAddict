@@ -1,6 +1,6 @@
 # Deal Command
 
-Sam's personal deal dashboard. It is a plain website (one HTML page plus one data file), hosted free on Cloudflare Pages from a private GitHub repo.
+Sam's personal deal dashboard. It is a plain website (one HTML page plus one data file), hosted free on Cloudflare Pages from this GitHub repo.
 
 ## What is in this repo
 
@@ -32,4 +32,4 @@ The backup can include Rachel's Try On photo, so keep the file private.
 
 ## Who can see the site
 
-The repo is private, and the site is locked with Cloudflare Access (free for up to 50 people). Visitors must enter an approved email and type a code that Cloudflare emails them. Setup steps are in `SETUP.md`.
+This repo and the site are public by choice. Search engines are told to stay away (`_headers` and `robots.txt`), so only people with the link should find it. If you ever want it locked, turn on Cloudflare Access (free for up to 50 people) using step 4 in `SETUP.md`.
