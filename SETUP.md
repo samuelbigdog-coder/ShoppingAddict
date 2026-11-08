@@ -52,3 +52,21 @@ Your hearts, carts and notes live in each browser, so the new site starts empty.
 ## 6. Phone
 
 Open deal-command.pages.dev, log in with the email code, then use **Add to Home Screen** so it opens like an app.
+
+## 7. Accounts and sync (Sam and Rachel)
+
+This makes hearts, carts, notes, don't buy flags and the wishlist follow you to every device, and lets you see each other's likes. Gifts you pick for each other stay hidden. It is all free.
+
+1. **Lock the site with Access** (step 4 above). In the policy, add both emails: yours and Rachel's. Then open the Access application and copy two things:
+   - **Team domain**, like `yourteam.cloudflareaccess.com` (Zero Trust, Settings, Custom Pages or Team name)
+   - **Application Audience (AUD) Tag** (on the application's Overview or Basic information page)
+2. **Make the database:** Workers & Pages, D1 SQL Database, **Create**, name it `shoppingaddict`. No tables needed, the site makes them.
+3. **Connect it:** open the `shoppingaddict` Pages project, Settings, **Bindings**, Add, **D1 database**. Variable name `DB`, database `shoppingaddict`. Save.
+4. **Add three variables:** same project, Settings, **Variables and Secrets**, add for Production:
+   - `USERS` = `sam:YOUR_EMAIL,rachel:HER_EMAIL`
+   - `TEAM_DOMAIN` = the team domain from step 1
+   - `POLICY_AUD` = the AUD tag from step 1
+5. **Redeploy:** Deployments, open the latest, **Retry deployment** (or just publish anything new).
+6. **Check it:** open the site. The chip at the top left of the search box should say your name with a green dot. If it says "This device", sync is not connected yet.
+
+The first time you sign in on your main browser, everything already saved there is copied into your account.
