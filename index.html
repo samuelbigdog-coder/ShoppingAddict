@@ -2966,6 +2966,11 @@ function impRole(d){
   if(/cardigan|jacket|blazer|coat|vest|shacket/.test(n)) return 'layer';
   return 'top';
 }
+function impStoreImg(u){
+  var m; u=String(u||'');
+  if(/bestbuy\.com/i.test(u)&&(m=u.match(/skuId=(\d{7})/i)||u.match(/\/(\d{7})\.p(?:[?#\/]|$)/)||u.match(/\/sku\/(\d{7})/i)||u.match(/\/product\/[^?#]*\/(\d{7})(?:[?#\/]|$)/))) return 'https://pisces.bbystatic.com/image2/BestBuy_US/images/products/'+m[1].slice(0,4)+'/'+m[1]+'_sd.jpg';
+  return null;
+}
 function impBuild(row){
   var p=row.p, r=row.r||{}, who=p._who, note=p.note||null;
   if(['sam','rachel','mom','dad','ben'].indexOf(who)<0) return {skip:'No person on this pick'};
@@ -2983,7 +2988,7 @@ function impBuild(row){
   var ms=IMP_MOOD[cat]||['thinkingofyou'], MP={}; (D.moods||[]).forEach(function(m){ MP[m.id]=m; });
   var e=0,i=0; ms.forEach(function(m){ e+=(MP[m]||{e:0}).e; i+=(MP[m]||{i:0}).i; }); e/=ms.length; i/=ms.length;
   var h=impHash(p.name), jx=((h&255)/255-.5)*.18, jy=(((h>>8)&255)/255-.5)*.18;
-  var img=(r.state==='ok'&&r.img)?r.img:(p.img||null);
+  var img=(r.state==='ok'&&r.img)?r.img:(p.img||impStoreImg(p.url)||null);
   var d={id:row.id,who:who,name:p.name,brand:p.brand||p.store,store:p.store,price:Math.round(price*100)/100,was:was,pct:pct,img:img,url:p.url,cat:cat,moods:ms,
     e:Math.round(Math.max(-.97,Math.min(.97,e+jx))*1000)/1000,i:Math.round(Math.max(-.97,Math.min(.97,i+jy))*1000)/1000,why:p.why||'',ends:p.ends||null,code:p.code||null,note:note,
     spid:p.store_product_id||null,src:r.state==='ok'?'Checked by the site '+new Date().toISOString().slice(0,10):'Not auto-checked',imported:Date.now()};
@@ -3006,7 +3011,7 @@ function impBuild(row){
   return {deal:d};
 }
 var IMP_STATE={ok:['Checked','ok'],blocked:['Not checked','warn'],dead:['Broken link','bad'],sold_out:['Sold out','bad'],mismatch:['Wrong product','bad'],bad_link:['Bad link','bad'],error:['Error','bad'],wait:['Waiting','wait'],dup:['Repeat','skip']};
-function impRowState(row){ if(!row.r) return 'wait'; if(row.r.state==='ok'&&!impTitleMatch(row.p.name,row.r.title)) return 'mismatch'; return row.r.state; }
+function impRowState(row){ if(!row.r) return 'wait'; if(row.r.state==='ok'&&/client challenge|security check|verify you are human|robot check/i.test(row.r.title||'')) return 'blocked'; if(row.r.state==='ok'&&!impTitleMatch(row.p.name,row.r.title)) return 'mismatch'; return row.r.state; }
 function vImport(){
   var h='<section class="fam-head"><p class="fam-k">Deal checker</p><h1>Import deals</h1><p class="fam-b">Drop in today’s ChatGPT result files. The site combines them, removes repeats and anything already on the site, then opens every product page to check the link, price, stock and photo.</p>'+
    '<div class="seg imseg"><button data-imode="import"'+(IMP.mode==='import'?' class="on"':'')+'>Import new deals</button><button data-imode="recheck"'+(IMP.mode==='recheck'?' class="on"':'')+'>Recheck the whole site</button><button data-imode="hidden"'+(IMP.mode==='hidden'?' class="on"':'')+'>Hidden ('+Object.keys(HIDDEN).length+')</button></div></section>';

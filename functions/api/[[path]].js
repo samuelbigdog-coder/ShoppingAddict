@@ -122,7 +122,7 @@ async function inspect(url) {
   await rw.transform(r).arrayBuffer();
   const p = pickLd(ld);
   const t = (title || '').trim();
-  if (/access denied|just a moment|attention required|are you a robot|captcha|pardon our interruption|request blocked/i.test(t)) { res.state = 'blocked'; return res; }
+  if (/access denied|just a moment|attention required|are you a robot|captcha|pardon our interruption|request blocked|client challenge|security check|verify you are human|one more step|robot check|bot detection|incapsula|perimeterx/i.test(t)) { res.state = 'blocked'; return res; }
   res.title = (meta['og:title'] || p.name || t).slice(0, 200);
   const looksGeneric = v => !v || /logo|placeholder|default[-_]?image|social|share[-_]?image|favicon|sprite/i.test(v);
   const cands = [meta['og:image'], meta['og:image:secure_url'], meta['twitter:image'], p.image, meta['image']];
