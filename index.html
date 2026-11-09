@@ -1006,6 +1006,55 @@ body[data-route="mom"] .tab.on,body[data-route="dad"] .tab.on,body[data-route="b
 .shb.dnb.me{opacity:.75}
 body[data-world="rachel"] .shb.liked{color:#C2185B}
 .dnbbtn.on{border-color:#FF5C6C;color:#FF5C6C}
+.ib.cartib.on{color:var(--acc,#3B82F6)}
+.ib.cartib.on svg{fill:none}
+.ib.rmib:hover{color:#FF5C6C}
+.card.rmgo{transition:opacity .25s,transform .25s;opacity:0;transform:scale(.96)}
+.mcwrap{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.mcrow{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 14px}
+.mcrow.got{opacity:.55}
+.mcrow .th2{width:64px;height:64px;flex:none;border-radius:12px;overflow:hidden}
+.mcrow .th2 img{width:100%;height:100%;object-fit:cover}
+.mci{flex:1;min-width:0}
+.mci .bl{font-size:12px;color:var(--ink2)}
+.mci .nm{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.mcb{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.mctot{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:14px;color:var(--ink2)}
+.mctot b{font-size:20px;color:var(--ink)}
+@media (max-width:620px){.mcrow{flex-wrap:wrap}.mcb{width:100%;justify-content:flex-start}}
+.bdhead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;margin:6px 0 14px}
+.bdhead h1{font-size:clamp(34px,5vw,54px);line-height:1;letter-spacing:-.02em}
+.bdhead p{color:var(--ink2);margin-top:8px}
+.bdctl{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.bdctl .gap{width:14px}
+.svstats{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 16px}
+.svstat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 16px;min-width:120px}
+.svstat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.svstat span{font-size:12.5px;color:var(--ink2)}
+.svgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.svt{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,border-color .15s}
+.svt:hover{transform:translateY(-2px);border-color:var(--line2)}
+.svt.svhit{border-color:#2FBF71}
+.svt .sti{position:relative;aspect-ratio:1/1;cursor:pointer;display:grid;place-items:center;border-radius:0}
+.svt .sti.photo img{width:100%;height:100%;object-fit:cover}
+.svt .sti .tag{position:absolute;left:10px;top:10px}
+.svt .stb{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.svt .stbl{font-size:12px;color:var(--ink2);display:flex;justify-content:space-between;gap:8px}
+.svt .stn{font-weight:600;font-size:14.5px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.svt .stt{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink2);margin-top:auto}
+.svt .stt input{width:72px;padding:5px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg2);color:var(--ink)}
+.svt .hitb{color:#2FBF71;font-weight:700;font-size:12px}
+.svt .gone{color:var(--ink3);font-size:12px}
+.svt .sta{display:flex;gap:6px;margin-top:6px}
+.svt .sta button,.svt .sta a{flex:1;text-align:center;padding:7px 6px;border-radius:10px;border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--ink2);background:transparent}
+.svt .sta a{background:var(--accent);border-color:var(--accent);color:#fff}
+.svt .sta button:hover{color:var(--ink);border-color:var(--line2)}
+#scene{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:0;opacity:0;transition:opacity 1.2s ease}
+#scene.on{opacity:1}
+#app,.foot,.eventbar{position:relative;z-index:1}
+body.scene-sea,body.scene-forest{background:#03070f}
+body.scene-sea::before,body.scene-forest::before{opacity:0}
+body.scene-sea .foot,body.scene-forest .foot{background:transparent}
 .dnbnote{margin-top:10px;font-weight:600;color:#FF5C6C;font-size:13px}
 .wsteps{display:flex;flex-wrap:wrap;gap:10px;list-style:none;margin:18px 0 4px}
 .wsteps li{display:flex;align-items:center;gap:10px;padding:10px 14px 10px 10px;border:1px solid var(--line);border-radius:14px;background:var(--card);font-weight:600}
@@ -1081,7 +1130,7 @@ body[data-world="rachel"] .shb.liked{color:#C2185B}
     <span>Deal Command</span>
   </a>
   <nav class="tabs" aria-label="Sections">
-    <button class="tab" data-go="today">Today</button>
+    <button class="tab" data-go="today">Big Deals</button>
     <button class="tab" data-go="sam">Sam</button>
     <button class="tab" data-go="rachel">Rachel</button>
     <button class="tab" data-go="mom">Mom</button>
@@ -1095,10 +1144,12 @@ body[data-world="rachel"] .shb.liked{color:#C2185B}
     <button class="userchip off" id="userChip" type="button"><i></i>This device</button>
     <button class="wishbtn" data-go="wish" aria-label="Wishlist inbox"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg><span class="lbl">Wishlist</span><span id="wishCount" class="num" style="display:none">0</span></button>
     <label class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search deals" autocomplete="off" aria-label="Search deals"/><kbd>/</kbd></label>
+    <button class="savedbtn cartbtn" data-go="mycart" aria-label="My cart"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L22 8H6"/></svg><span id="cartCount" class="num">0</span></button>
     <button class="savedbtn" data-go="saved" aria-label="Saved items"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 2.9 4.5 6.6 4.5c2.1 0 3.6 1.2 4.4 2.4h2c.8-1.2 2.3-2.4 4.4-2.4 3.7 0 5.7 3.9 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg><span id="savedCount" class="num">0</span></button>
   </div>
 </header>
 <div id="flora" aria-hidden="true"></div>
+<canvas id="scene" aria-hidden="true"></canvas>
 <div class="eventbar" id="eventbar"></div>
 <main id="app"></main>
 <footer class="foot" id="foot"></footer>
@@ -1219,7 +1270,7 @@ function curHash(){ return route+((route==='rachel'||route==='sam')&&SUB[route]!
 function go(r){
   var parts=String(r||'').split('/'); r=parts[0];
   if(parts[1] && SUB[r]!=null && subList(r).some(function(x){ return x[0]===parts[1]; })) SUB[r]=parts[1];
-  if(['today','sam','rachel','mom','dad','ben','moods','all','saved','wish','import'].indexOf(r)<0) r='today';
+  if(['today','sam','rachel','mom','dad','ben','moods','all','saved','wish','import','mycart'].indexOf(r)<0) r='today';
   var _cwPrev=route; route=r;
   var hs=curHash();
   if(location.hash!=='#'+hs){ try{ if(window._navPush) history.pushState(null,'','#'+hs); else history.replaceState(null,'','#'+hs); }catch(e){ location.hash=hs; } }
@@ -1245,6 +1296,7 @@ function render(){
   else if(FAM.indexOf(route)>=0){ app.innerHTML=vFam(route); }
   else if(route==='wish'){ app.innerHTML=vWish(); initWish(); }
   else if(route==='import'){ app.innerHTML=vImport(); impRender(); }
+  else if(route==='mycart'){ app.innerHTML=vMyCart(); }
 }
 
 /* ---------- today ---------- */
@@ -2816,19 +2868,235 @@ document.addEventListener('click',function(e){
   lsSet('dc4_dnb',dnb); t.outerHTML=dnbBtnHtml(id);
 });
 
-/* Saved page: your labels, plus what the other person liked */
-var _cwVSaved=vSaved;
+/* card buttons: my cart (private) and remove / don't buy */
+ICON.cart='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.2a2 2 0 0 0 2 1.6h8.2a2 2 0 0 0 2-1.5L22 8H6"/></svg>';
+ICON.x='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+var myCart=lsGet('dc4_cart_mine',[]);
+function inCart(id){ return myCart.some(function(c){ return c.id===id; }); }
+function cartCount(){ var el=document.getElementById('cartCount'); if(el){ var n=myCart.filter(function(c){ return !c.got&&BY[c.id]; }).length; el.textContent=n; el.style.display=n?'':'none'; } }
+function cartBtn(id){ var on=inCart(id); return '<button class="ib cartib'+(on?' on':'')+'" data-cart="'+id+'" aria-label="'+(on?'Remove from my cart':'Add to my cart')+'" title="'+(on?'In your cart':'Add to my cart')+'">'+ICON.cart+'</button>'; }
+function rmBtn(id){ var on=!!dnb[id]; return '<button class="ib rmib'+(on?' on':'')+'" data-rm="'+id+'" aria-label="'+(on?'Bring back':'Remove, don’t buy')+'" title="'+(on?'Bring back':'Remove, don’t buy')+'">'+ICON.x+'</button>'; }
+var _mcCard=card;
+card=function(d,o){
+  if(dnb[d.id] && route!=='saved' && route!=='mycart') return '';
+  var h=_mcCard(d,o), eye='aria-label="Quick look">'+ICON.eye+'</button>';
+  return h.indexOf(eye)>=0 ? h.replace(eye, eye+cartBtn(d.id)+rmBtn(d.id)) : h;
+};
+function cartToggle(id){
+  var k=-1; myCart.forEach(function(c,i){ if(c.id===id) k=i; });
+  if(k>=0){ myCart.splice(k,1); toast('Removed from your cart'); }
+  else { myCart.push({id:id,t:Date.now()}); toast('In your cart. Only you can see it'); }
+  lsSet('dc4_cart_mine',myCart); cartCount();
+  document.querySelectorAll('[data-cart="'+id+'"]').forEach(function(b){ b.outerHTML=b.classList.contains('btn')?cartSheetBtn(id):cartBtn(id); });
+  if(route==='mycart') render();
+}
+function rmToggle(id,el){
+  var d=BY[id];
+  if(dnb[id]){ delete dnb[id]; toast('Back on the site'); }
+  else { dnb[id]={t:Date.now(),name:d?d.name:''}; toast('Removed. Bring it back from Saved'); }
+  lsSet('dc4_dnb',dnb);
+  var c=el&&el.closest('.card');
+  if(dnb[id] && c && route!=='saved'){ c.classList.add('rmgo'); setTimeout(function(){ c.remove(); },260); }
+  else render();
+}
+function cartSheetBtn(id){ var on=inCart(id); return '<button class="btn sec cartsheet'+(on?' on':'')+'" data-cart="'+id+'">'+(on?'🛒 In my cart':'🛒 Add to my cart')+'</button>'; }
+(function(){ var sh=document.getElementById('sheet'); if(!sh||!window.MutationObserver) return;
+  new MutationObserver(function(){ var b=sh.querySelector('.sbox [data-save]'); if(!b||sh.querySelector('.cartsheet')) return; b.insertAdjacentHTML('afterend',cartSheetBtn(b.getAttribute('data-save'))); }).observe(sh,{childList:true,subtree:true}); })();
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-cart]');
+  if(t){ e.preventDefault(); e.stopPropagation(); cartToggle(t.getAttribute('data-cart')); return; }
+  t=e.target.closest('[data-rm]');
+  if(t){ e.preventDefault(); e.stopPropagation(); rmToggle(t.getAttribute('data-rm'),t); return; }
+  t=e.target.closest('[data-cgot]');
+  if(t){ var id=t.getAttribute('data-cgot'); myCart.forEach(function(c){ if(c.id===id) c.got=!c.got; }); lsSet('dc4_cart_mine',myCart); cartCount(); render(); }
+},true);
+var FORN={sam:'Me',rachel:'Rachel',mom:'Mom',dad:'Dad',ben:'Ben',both:'Me'};
+function vMyCart(){
+  var items=myCart.filter(function(c){ return BY[c.id]; });
+  var open=items.filter(function(c){ return !c.got; }), tot=0, sv=0;
+  open.forEach(function(c){ var d=BY[c.id]; tot+=d.price||0; sv+=d.saved$||0; });
+  var h='<section class="phead"><div class="ptitle"><h1>My cart</h1><p class="pblurb">Things you plan to buy. Only you can see this, '+esc(NAMES[OTHER])+' never does.</p></div></section>';
+  if(!items.length) return h+'<div class="empty"><strong>Your cart is empty</strong><span>Tap the cart button on any deal to add it here.</span><button class="btn sec" data-go="all">Browse all deals</button></div>';
+  h+='<div class="mctot"><span><b>'+money(Math.round(tot*100)/100)+'</b> total</span><span><b>'+money(Math.round(sv))+'</b> saved</span><span><b>'+open.length+'</b> to buy</span></div>';
+  var groups={}; items.forEach(function(c){ var w=FORN[BY[c.id].who]||'Other'; (groups[w]=groups[w]||[]).push(c); });
+  ['Me','Rachel','Mom','Dad','Ben','Other'].forEach(function(g){
+    if(!groups[g]) return;
+    h+='<section class="sec"><div class="sech"><div><h2>'+(g==='Me'?'For me':'For '+g)+'</h2></div></div><div class="mcwrap">';
+    groups[g].forEach(function(c){ var d=BY[c.id];
+      h+='<div class="mcrow'+(c.got?' got':'')+'">'+thumb(d)+'<div class="mci"><div class="bl">'+esc(d.brand||'')+' · '+esc(d.store||'')+'</div><a class="nm" data-qv="'+d.id+'">'+esc(dname(d))+'</a><div class="pr">'+priceHtml(d)+'</div></div>'+
+        '<div class="mcb"><a class="btn pri sm" href="'+esc(d.url)+'" target="_blank" rel="noopener">Buy</a><button class="btn sec sm" data-cgot="'+d.id+'">'+(c.got?'Undo':'Bought')+'</button><button class="btn sec sm" data-cart="'+d.id+'">Remove</button></div></div>';
+    });
+    h+='</div></section>';
+  });
+  return h;
+}
+setTimeout(cartCount,0);
+
+/* Saved page with subtabs */
+var svTab=(function(){ try{ return sessionStorage.getItem('dc4_svtab')||'mine'; }catch(e){ return 'mine'; } })();
+function svTile(s){
+  var d=savedDeal(s); if(!d) return '';
+  var hit=!d.gone && s.target && d.price!=null && d.price<=s.target, other=s['for']==='rachel'?'Sam':'Rachel';
+  return '<article class="svt'+(hit?' svhit':'')+'"><a class="sti plate'+(isCover(d)?' cover':'')+(isPhoto(d)?' photo':'')+'" data-qv="'+d.id+'">'+imgTag(d)+(d.pct?'<span class="tag">−'+d.pct+'%</span>':'')+'</a>'+
+    '<div class="stb"><div class="stbl"><span>'+esc(d.brand||'')+'</span><span>'+esc(d.store||'')+'</span></div><div class="stn" data-qv="'+d.id+'">'+esc(dname(d))+'</div><div class="pr">'+priceHtml(d)+'</div>'+
+    '<div class="stt"><label>Alert under $ <input class="tgt" data-id="'+d.id+'" type="number" min="0" step="1" value="'+(s.target||'')+'" aria-label="Target price"/></label>'+(hit?'<span class="hitb">Hit</span>':'')+'</div>'+
+    (d.gone?'<span class="gone">Deal ended. Price may have changed</span>':'')+
+    '<div class="sta"><a href="'+esc(d.url)+'" target="_blank" rel="noopener">Buy</a><button data-svfor="'+d.id+'" title="Move to '+other+'">Move</button><button data-unsave="'+d.id+'">Remove</button></div></div></article>';
+}
+function svStats(list){
+  var tot=0,sv=0,hit=0; list.forEach(function(s){ var d=savedDeal(s); if(!d||d.gone) return; tot+=d.price||0; sv+=d.saved$||0; if(s.target&&d.price!=null&&d.price<=s.target) hit++; });
+  return '<div class="svstats"><div class="svstat"><b>'+list.length+'</b><span>items</span></div><div class="svstat"><b>'+money(Math.round(tot))+'</b><span>if you bought all</span></div><div class="svstat"><b>'+money(Math.round(sv))+'</b><span>saved vs full price</span></div>'+(hit?'<div class="svstat"><b>'+hit+'</b><span>at your alert price</span></div>':'')+'</div>';
+}
 vSaved=function(){
-  var h=_cwVSaved();
-  if(ME==='rachel') h=h.replace('Sam’s watchlist','Gifts for Sam (hidden from him)').replace('Rachel’s gift box','Your favorites').replace('Your watchlist and Rachel’s gift box.','Your favorites and secret gifts for Sam.');
-  else if(SYNC.on) h=h.replace('Rachel’s gift box','Rachel’s gift box (hidden from her)');
-  if(!SYNC.on) return h;
-  var ol=(SHARED.saved||[]).filter(function(s){ return s&&BY[s.id]; }), od=Object.keys(SHARED.dnb||{}).filter(function(id){ return BY[id]; });
-  h+='<section class="sec"><div class="sech"><div><h2>'+esc(NAMES[OTHER])+'’s likes</h2><p>'+ol.length+' item'+(ol.length===1?'':'s')+'. Gifts '+(OTHER==='rachel'?'she':'he')+' picked for you stay hidden.</p></div></div>'+
-    (ol.length?'<div class="grid">'+ol.map(function(s){ return card(BY[s.id]); }).join('')+'</div>':'<div class="empty"><strong>Nothing yet</strong><span>When '+esc(NAMES[OTHER])+' hearts something, it shows up here.</span></div>')+'</section>';
-  if(od.length) h+='<section class="sec"><div class="sech"><div><h2>Don’t buy</h2><p>'+esc(NAMES[OTHER])+' already has these or does not want them.</p></div></div><div class="grid">'+od.map(function(id){ return card(BY[id]); }).join('')+'</div></section>';
+  var live=saved.filter(function(s){ return savedDeal(s); }).slice().reverse();
+  var mineFor=ME==='rachel'?['rachel']:['sam','both'], giftFor=ME==='rachel'?['sam','both']:['rachel'];
+  var mine=live.filter(function(s){ return mineFor.indexOf(s['for'])>=0; }), gift=live.filter(function(s){ return giftFor.indexOf(s['for'])>=0; });
+  var fam=live.filter(function(s){ return FAM.indexOf(s['for'])>=0; });
+  var theirs=SYNC.on?(SHARED.saved||[]).filter(function(s){ return s&&BY[s.id]; }):[];
+  var rem=Object.keys(dnb).filter(function(id){ return BY[id]; }), no=Object.keys(SHARED.dnb||{}).filter(function(id){ return BY[id]; });
+  var O=NAMES[OTHER]||'Rachel';
+  var tabs=[['mine',ME==='rachel'?'💗 My favorites':'❤️ My saves',mine.length],['gift','🔒 Gifts for '+O,gift.length]];
+  if(fam.length) tabs.push(['fam','👪 Family',fam.length]);
+  if(SYNC.on) tabs.push(['theirs','👀 '+O+'’s likes',theirs.length]);
+  tabs.push(['rem','✕ Removed',rem.length]);
+  if(no.length) tabs.push(['no','⛔ '+O+' says no',no.length]);
+  if(!tabs.some(function(t){ return t[0]===svTab; })) svTab='mine';
+  var sub={mine:'Things you want. Set an alert price and the card turns green when it hits.',gift:'Gift ideas for '+O+'. Hidden from '+him(OTHER)+'.',fam:'Saved for Mom, Dad and Ben.',theirs:'What '+O+' has hearted. Gifts '+(OTHER==='rachel'?'she':'he')+' picked for you stay hidden.',rem:'Items you removed. Tap the X to bring one back.',no:O+' already has these or does not want them.'}[svTab];
+  var h='<section class="phead"><div class="ptitle"><h1>Saved</h1><p class="pblurb">'+sub+'</p><div class="memrow"><button class="btn sec sm" data-memexport="1">Export memory</button><button class="btn sec sm" data-memimport="1">Import memory</button><button class="btn sec sm" data-go="import">Import deals</button></div></div></section>';
+  h+='<nav class="subnav" aria-label="Saved sections"><div class="subwrap">'+tabs.map(function(t){ return '<button class="subt'+(svTab===t[0]?' on':'')+'" data-svtab="'+t[0]+'">'+t[1]+' <span class="n">'+t[2]+'</span></button>'; }).join('')+'</div></nav>';
+  var list={mine:mine,gift:gift,fam:fam}[svTab];
+  if(list){
+    if(!list.length) return h+'<div class="empty"><strong>Nothing here yet</strong><span>Tap the heart on any deal to add it.</span><button class="btn sec" data-go="all">Browse all deals</button></div>';
+    return h+svStats(list)+'<div class="svgrid">'+list.map(svTile).join('')+'</div>';
+  }
+  var ids=svTab==='theirs'?theirs.map(function(s){ return s.id; }):(svTab==='rem'?rem:no);
+  if(!ids.length) return h+'<div class="empty"><strong>Nothing here yet</strong><span>'+(svTab==='theirs'?'When '+esc(O)+' hearts something, it shows up here.':'Tap the X on any deal to remove it.')+'</span></div>';
+  return h+'<div class="grid">'+ids.map(function(id){ return card(BY[id]); }).join('')+'</div>';
+};
+document.addEventListener('click',function(e){ var t=e.target.closest('[data-svtab]'); if(!t) return; svTab=t.getAttribute('data-svtab'); try{ sessionStorage.setItem('dc4_svtab',svTab); }catch(x){} render(); window.scrollTo({top:0}); });
+
+
+/* living backgrounds: aquarium on Big Deals, forest on Saved */
+var SCENE=(function(){
+  var cv=document.getElementById('scene'); if(!cv||!cv.getContext) return {set:function(){}};
+  var cx=cv.getContext('2d'), W=0, H=0, DPR=1, mode=null, raf=null, last=0, T=0, items=[], snow=[], trees=[], flies=[], gust={x:-1e4,str:0,next:4};
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function R(a,b){ return a+Math.random()*(b-a); }
+  function size(){ DPR=Math.min(window.devicePixelRatio||1,1.5); W=innerWidth; H=innerHeight; cv.width=W*DPR; cv.height=H*DPR; cx.setTransform(DPR,0,0,DPR,0,0); }
+  /* ---- sea ---- */
+  function jelly(init){
+    var r=R(18,62)*(W<700?.7:1), warm=Math.random()<.25;
+    return {x:R(0,W),y:init?R(-50,H+80):H+r*3,r:r,z:r/62,ph:R(0,6.28),sp:R(.55,.95),dx:R(-.15,.15),
+      h:warm?R(14,28):R(192,214),warm:warm,n:Math.round(R(7,12)),len:R(2.4,4.2),tilt:0};
+  }
+  function seaInit(){ items=[]; var n=W<700?7:14; for(var i=0;i<n;i++) items.push(jelly(true)); snow=[]; for(var k=0;k<(W<700?40:90);k++) snow.push({x:R(0,W),y:R(0,H),r:R(.4,1.8),v:R(4,14),a:R(.15,.5),b:Math.random()<.07}); }
+  function seaDraw(dt){
+    var g=cx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#04122b'); g.addColorStop(.55,'#030b1d'); g.addColorStop(1,'#01040b'); cx.fillStyle=g; cx.fillRect(0,0,W,H);
+    cx.globalCompositeOperation='lighter';
+    for(var b=0;b<4;b++){ var bx=W*(.15+.25*b)+Math.sin(T*.07+b*1.7)*W*.06, gr=cx.createLinearGradient(bx,0,bx-H*.35,H); gr.addColorStop(0,'rgba(90,160,255,.07)'); gr.addColorStop(.6,'rgba(90,160,255,.015)'); gr.addColorStop(1,'rgba(90,160,255,0)');
+      cx.fillStyle=gr; cx.beginPath(); cx.moveTo(bx-40,0); cx.lineTo(bx+50,0); cx.lineTo(bx-H*.35+140,H); cx.lineTo(bx-H*.35-120,H); cx.closePath(); cx.fill(); }
+    snow.forEach(function(p){ p.y-=p.v*dt*(p.b?3:1); p.x+=Math.sin(T*.5+p.y*.01)*.15; if(p.y<-5){ p.y=H+5; p.x=R(0,W); }
+      cx.fillStyle=p.b?'rgba(170,215,255,'+(p.a*.6)+')':'rgba(160,200,255,'+p.a+')'; cx.beginPath(); cx.arc(p.x,p.y,p.b?p.r*2.4:p.r,0,6.28); if(p.b){ cx.strokeStyle=cx.fillStyle; cx.lineWidth=.8; cx.stroke(); } else cx.fill(); });
+    items.sort(function(a,b){ return a.r-b.r; });
+    items.forEach(function(j,i){
+      j.ph+=dt*j.sp*2.2; var pulse=Math.sin(j.ph), push=Math.max(0,pulse);
+      j.y-=dt*(6+j.r*.55*(.25+push*1.1)); j.x+=dt*(j.dx*30+Math.sin(T*.2+i)*4); j.tilt=Math.sin(T*.25+i*2)*.18;
+      if(j.y<-j.r*5||j.x<-150||j.x>W+150) items[i]=jelly(false);
+      drawJelly(j,pulse);
+    });
+    cx.globalCompositeOperation='source-over';
+    var v=cx.createRadialGradient(W/2,H*.45,Math.min(W,H)*.3,W/2,H/2,Math.max(W,H)*.75); v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.55)'); cx.fillStyle=v; cx.fillRect(0,0,W,H);
+  }
+  function hsl(j,l,a){ return 'hsla('+j.h+','+(j.warm?80:90)+'%,'+l+'%,'+a+')'; }
+  function drawJelly(j,pulse){
+    var bw=j.r*(1+.13*pulse), bh=j.r*.82*(1-.14*pulse), A=.45+.55*j.z;
+    cx.save(); cx.translate(j.x,j.y); cx.rotate(j.tilt);
+    for(var t=0;t<j.n;t++){ var sx=-bw*.9+bw*1.8*t/(j.n-1), L=j.r*j.len, ph=T*1.6+t*.9+j.ph*.3;
+      cx.beginPath(); cx.moveTo(sx,0);
+      for(var s2=1;s2<=6;s2++){ var f=s2/6; cx.lineTo(sx*(1-f*.35)+Math.sin(ph+f*4)*j.r*.22*f,f*L); }
+      cx.strokeStyle=hsl(j,75,.22*A); cx.lineWidth=.9; cx.stroke(); }
+    for(var o=0;o<4;o++){ var ox=(o-1.5)*bw*.18, L2=j.r*j.len*.75, ph2=T*1.1+o*1.3;
+      cx.beginPath(); cx.moveTo(ox-3,0);
+      for(var s3=1;s3<=8;s3++){ var f2=s3/8; cx.lineTo(ox+Math.sin(ph2+f2*5)*j.r*.28*f2-3*(1-f2),f2*L2); }
+      for(var s4=8;s4>=0;s4--){ var f3=s4/8; cx.lineTo(ox+Math.sin(ph2+f3*5)*j.r*.28*f3+3+3*(1-f3),f3*L2); }
+      cx.closePath(); cx.fillStyle=hsl(j,j.warm?70:75,.10*A); cx.fill(); }
+    var g=cx.createRadialGradient(0,-bh*.55,bw*.1,0,-bh*.3,bw*1.15); g.addColorStop(0,hsl(j,90,.55*A)); g.addColorStop(.6,hsl(j,72,.24*A)); g.addColorStop(1,hsl(j,60,.05*A));
+    cx.beginPath(); cx.moveTo(-bw,0); cx.bezierCurveTo(-bw,-bh*1.25,bw,-bh*1.25,bw,0);
+    for(var k=0;k<=10;k++){ var xx=bw-2*bw*k/10; cx.lineTo(xx,(k%2?bh*.07:0)); }
+    cx.closePath(); cx.fillStyle=g; cx.fill(); cx.strokeStyle=hsl(j,85,.45*A); cx.lineWidth=1.1; cx.stroke();
+    cx.strokeStyle=hsl(j,90,.32*A); cx.lineWidth=1;
+    for(var q=0;q<4;q++){ var a=q*1.5708+.785; cx.beginPath(); cx.ellipse(Math.cos(a)*bw*.2,-bh*.42+Math.sin(a)*bh*.16,bw*.13,bh*.11,a,0,6.28); cx.stroke(); }
+    cx.restore();
+  }
+  /* ---- forest ---- */
+  function pine(x,base,h,layer){
+    var tiers=Math.round(R(6,9)), pts=[], w=h*R(.28,.36);
+    pts.push([-w*.06,0]); 
+    for(var i=0;i<tiers;i++){ var f0=.08+.9*i/tiers, f1=.08+.9*(i+1)/tiers, ww=w*(1-f0)*.5; pts.push([-ww,f0]); pts.push([-ww*.62,f0+.03]); pts.push([-ww*.5,f1-.02]); }
+    pts.push([0,1]);
+    for(var i2=tiers-1;i2>=0;i2--){ var g0=.08+.9*i2/tiers, g1=.08+.9*(i2+1)/tiers, w2=w*(1-g0)*.5; pts.push([w2*.5,g1-.02]); pts.push([w2*.62,g0+.03]); pts.push([w2,g0]); }
+    pts.push([w*.06,0]);
+    return {x:x,b:base,h:h,pts:pts,layer:layer,ph:R(0,6.28),fr:R(.35,.6)};
+  }
+  function forestInit(){ trees=[]; var L=[[.62,.55,.75],[.78,.75,1],[.95,1,1.35]];
+    L.forEach(function(l,li){ var x=-60; while(x<W+80){ trees.push(pine(x,H*l[0]+R(0,H*.05),H*R(.32,.5)*l[1]*(W<700?.8:1),li)); x+=R(28,60)*l[2]*(W<700?.8:1); } });
+    flies=[]; for(var k=0;k<(W<700?14:30);k++) flies.push({x:R(0,W),y:R(H*.35,H),p:R(0,6.28),s:R(.3,.8)}); gust={x:-1e4,str:0,next:R(2,5)}; }
+  function forestDraw(dt){
+    var g=cx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#071a26'); g.addColorStop(.45,'#0b2a2a'); g.addColorStop(.75,'#0a1f1a'); g.addColorStop(1,'#050d0b'); cx.fillStyle=g; cx.fillRect(0,0,W,H);
+    var m=cx.createRadialGradient(W*.8,H*.16,0,W*.8,H*.16,Math.max(W,H)*.45); m.addColorStop(0,'rgba(220,240,220,.16)'); m.addColorStop(.12,'rgba(200,230,210,.07)'); m.addColorStop(1,'rgba(200,230,210,0)'); cx.fillStyle=m; cx.fillRect(0,0,W,H);
+    cx.fillStyle='rgba(235,245,230,.55)'; cx.beginPath(); cx.arc(W*.8,H*.16,Math.min(W,H)*.035,0,6.28); cx.fill();
+    if(gust.x>-1e3){ gust.x+=dt*Math.max(260,W*.22); if(gust.x>W+600){ gust.x=-1e4; gust.next=R(7,13); } }
+    else { gust.next-=dt; if(gust.next<=0){ gust.x=-500; gust.str=R(.6,1); } }
+    var cols=['#123a37','#0d2c28','#07191a'], fog=['rgba(170,210,200,.05)','rgba(150,200,190,.04)'];
+    for(var li=0;li<3;li++){
+      trees.forEach(function(t){ if(t.layer!==li) return;
+        var gs=gust.x>-1e3?gust.str*Math.exp(-Math.pow((t.x-gust.x)/(W*.18),2)):0;
+        var bend=(Math.sin(T*t.fr+t.ph)*.022+Math.sin(T*t.fr*2.3+t.ph)*.006+gs*(.09+.04*Math.sin(T*6+t.ph)))*t.h;
+        cx.beginPath(); t.pts.forEach(function(p,i){ var f=p[1], X=t.x+p[0]+bend*Math.pow(f,1.8), Y=t.b-f*t.h; if(i) cx.lineTo(X,Y); else cx.moveTo(X,Y); });
+        cx.closePath(); cx.fillStyle=cols[li]; cx.fill(); });
+      if(li<2){ var fy=H*(li?.6:.45), fg=cx.createLinearGradient(0,fy,0,H); fg.addColorStop(0,'rgba(120,175,165,0)'); fg.addColorStop(.35,li?'rgba(110,165,155,.10)':'rgba(130,185,175,.14)'); fg.addColorStop(1,li?'rgba(20,50,45,.5)':'rgba(30,70,62,.6)'); cx.fillStyle=fg; cx.fillRect(0,fy,W,H-fy); }
+    }
+    cx.globalCompositeOperation='lighter';
+    flies.forEach(function(f){ f.p+=dt*f.s; f.x+=Math.cos(f.p*1.3)*.25+(gust.x>-1e3?gust.str*.6*Math.exp(-Math.pow((f.x-gust.x)/(W*.2),2)):0); f.y+=Math.sin(f.p)*.2; if(f.x>W+10) f.x=-10;
+      var a=.25+.35*Math.max(0,Math.sin(f.p*2.1)); var r=cx.createRadialGradient(f.x,f.y,0,f.x,f.y,7); r.addColorStop(0,'rgba(220,255,170,'+a+')'); r.addColorStop(1,'rgba(220,255,170,0)'); cx.fillStyle=r; cx.fillRect(f.x-7,f.y-7,14,14); });
+    cx.globalCompositeOperation='source-over';
+    var v=cx.createLinearGradient(0,0,0,H*.5); v.addColorStop(0,'rgba(3,7,15,.35)'); v.addColorStop(1,'rgba(3,7,15,0)'); cx.fillStyle=v; cx.fillRect(0,0,W,H*.5);
+  }
+  function frame(ts){
+    raf=null; if(!mode) return;
+    var dt=Math.min(.05,last?(ts-last)/1000:.016); if(last&&ts-last<24){ raf=requestAnimationFrame(frame); return; } last=ts; T+=dt;
+    if(mode==='sea') seaDraw(dt); else forestDraw(dt);
+    if(!reduce&&!document.hidden) raf=requestAnimationFrame(frame);
+  }
+  function set(m){
+    if(m===mode) return; mode=m;
+    document.body.classList.toggle('scene-sea',m==='sea'); document.body.classList.toggle('scene-forest',m==='forest');
+    if(!m){ cv.classList.remove('on'); return; }
+    size(); T=0; last=0; if(m==='sea') seaInit(); else forestInit();
+    if(m==='forest'){ for(var i=0;i<3;i++) forestDraw(.016); } else seaDraw(.016);
+    cv.classList.add('on'); if(!raf) raf=requestAnimationFrame(frame);
+  }
+  addEventListener('resize',function(){ if(!mode) return; size(); if(mode==='sea') seaInit(); else forestInit(); });
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden&&mode&&!raf&&!reduce){ last=0; raf=requestAnimationFrame(frame); } });
+  return {set:set};
+})();
+var _scRender=render;
+render=function(){ _scRender.apply(this,arguments); SCENE.set(route==='today'?'sea':(route==='saved'?'forest':null)); };
+/* Big Deals: the biggest percent off */
+var bdWho='all', bdMin=50;
+vToday=function(){
+  heroCount=0;
+  var L=DEALS.filter(function(d){ return live(d) && d.pct>0 && d.price!=null; });
+  var who=function(d){ return bdWho==='all' || d.who===bdWho || (bdWho==='sam'&&d.who==='both'); };
+  var list=L.filter(function(d){ return who(d) && d.pct>=bdMin; }).sort(function(a,b){ return (b.pct-a.pct)||(b.score-a.score); });
+  var people=[['all','Everyone'],['sam','Sam'],['rachel','Rachel'],['mom','Mom'],['dad','Dad'],['ben','Ben']];
+  var h='<div class="bdhead"><div><h1>Big Deals</h1><p>Only the biggest discounts on the site, highest percent off first.</p></div></div>';
+  h+='<div class="bdctl">'+people.map(function(p){ var n=L.filter(function(d){ return (p[0]==='all'||d.who===p[0]||(p[0]==='sam'&&d.who==='both')) && d.pct>=bdMin; }).length; return '<button class="chip'+(bdWho===p[0]?' on':'')+'" data-bdwho="'+p[0]+'">'+p[1]+' <span class="n">'+n+'</span></button>'; }).join('')+
+     '<span class="gap"></span>'+[30,40,50,60,70].map(function(v){ return '<button class="chip'+(bdMin===v?' on':'')+'" data-bdmin="'+v+'">'+v+'%+ off</button>'; }).join('')+'</div>';
+  h+=list.length?'<div class="grid">'+list.map(function(d){ return card(d,{who:true}); }).join('')+'</div>':'<div class="empty"><strong>No deals that big right now</strong><span>Try a lower percent.</span></div>';
   return h;
 };
+document.addEventListener('click',function(e){ var t=e.target.closest('[data-bdwho],[data-bdmin]'); if(!t) return; if(t.hasAttribute('data-bdwho')) bdWho=t.getAttribute('data-bdwho'); else bdMin=+t.getAttribute('data-bdmin'); render(); });
 
 /* wishlist inbox */
 var wFor='me';
