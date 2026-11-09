@@ -1045,6 +1045,34 @@ body[data-world="rachel"] .shb.liked{color:#C2185B}
 @media (max-width:1560px){.wishbtn .lbl{display:none}.search{width:190px}}
 @media (max-width:700px){.wform{grid-template-columns:1fr;padding:16px}.wexp{margin-left:0}.wishbtn span.lbl{display:none}.userchip{padding:8px 10px}}
 </style>
+<style id="imp-style">
+.imseg{margin-top:16px}
+.imdrop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:34px 18px;margin:18px 0;border:2px dashed var(--line2);border-radius:20px;background:var(--card);cursor:pointer;transition:border-color .2s,background .2s}
+.imdrop b{font:600 18px var(--disp)}
+.imdrop span{color:var(--ink2);font-size:13.5px;max-width:52ch}
+.imdrop.over,.imdrop:hover{border-color:var(--accent)}
+.imdrop.static{cursor:default}
+.imdrop .btn{margin-top:10px}
+.imsum{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.imsum span{padding:7px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:12.5px;color:var(--ink2)}
+.imsum b{color:var(--ink)}
+.st{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;background:var(--bg2);color:var(--ink2)}
+.st.ok{background:color-mix(in srgb,var(--good) 18%,transparent);color:var(--good)}
+.st.warn{background:color-mix(in srgb,#FFB547 18%,transparent);color:#FFB547}
+.st.bad{background:color-mix(in srgb,#FF5C6C 18%,transparent);color:#FF7A85}
+.improg{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-bottom:14px}
+.improg i{display:block;height:100%;background:var(--accent);transition:width .4s}
+.imact{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
+.imtable{display:flex;flex-direction:column;gap:6px;margin-bottom:30px}
+.imrow{display:flex;align-items:center;gap:12px;padding:8px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card);min-width:0}
+.imrow img,.imrow .imph{width:46px;height:46px;flex:none;border-radius:10px;object-fit:cover;background:var(--plate)}
+.imrow .imph{background:var(--bg2)}
+.imn{display:flex;flex-direction:column;min-width:0;flex:1}
+.imn b{font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imn span{font-size:12px;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imrow .lnk{font-size:12.5px;color:var(--accent2);font-weight:600}
+@media (max-width:600px){.imrow{flex-wrap:wrap}.imn{flex-basis:calc(100% - 90px)}}
+</style>
 </head>
 <body data-world="sam">
 <header class="hdr">
@@ -1191,7 +1219,7 @@ function curHash(){ return route+((route==='rachel'||route==='sam')&&SUB[route]!
 function go(r){
   var parts=String(r||'').split('/'); r=parts[0];
   if(parts[1] && SUB[r]!=null && subList(r).some(function(x){ return x[0]===parts[1]; })) SUB[r]=parts[1];
-  if(['today','sam','rachel','mom','dad','ben','moods','all','saved','wish'].indexOf(r)<0) r='today';
+  if(['today','sam','rachel','mom','dad','ben','moods','all','saved','wish','import'].indexOf(r)<0) r='today';
   var _cwPrev=route; route=r;
   var hs=curHash();
   if(location.hash!=='#'+hs){ try{ if(window._navPush) history.pushState(null,'','#'+hs); else history.replaceState(null,'','#'+hs); }catch(e){ location.hash=hs; } }
@@ -1216,6 +1244,7 @@ function render(){
   else if(route==='saved'){ app.innerHTML=vSaved(); }
   else if(FAM.indexOf(route)>=0){ app.innerHTML=vFam(route); }
   else if(route==='wish'){ app.innerHTML=vWish(); initWish(); }
+  else if(route==='import'){ app.innerHTML=vImport(); impRender(); }
 }
 
 /* ---------- today ---------- */
@@ -1637,7 +1666,7 @@ function renderResults(){
 /* ---------- saved ---------- */
 function vSaved(){
   var S=saved.filter(function(s){ return savedDeal(s) && s.for!=='rachel'; }), R=saved.filter(function(s){ return savedDeal(s) && s.for==='rachel'; });
-  return '<section class="phead"><div class="ptitle"><h1>Saved</h1><p class="pblurb">Your watchlist and Rachel’s gift box. Add a target price and it flags the moment a deal hits it.</p><div class="memrow"><button class="btn sec sm" data-memexport="1">Export memory</button><button class="btn sec sm" data-memimport="1">Import memory</button><span>Back up hearts, target prices, carts, budgets, notes and gift picks, or move them to another device.</span></div></div></section>'+
+  return '<section class="phead"><div class="ptitle"><h1>Saved</h1><p class="pblurb">Your watchlist and Rachel’s gift box. Add a target price and it flags the moment a deal hits it.</p><div class="memrow"><button class="btn sec sm" data-memexport="1">Export memory</button><button class="btn sec sm" data-memimport="1">Import memory</button><button class="btn sec sm" data-go="import">Import deals</button><span>Back up hearts, target prices, carts, budgets, notes and gift picks, or move them to another device.</span></div></div></section>'+
     '<div class="svwrap">'+svCol('sam','Sam’s watchlist',S)+svCol('rachel','Rachel’s gift box',R)+'</div>';
 }
 function svCol(key,title,items){
@@ -1765,7 +1794,7 @@ function memImport(){
   inp.click();
 }
 function renderFoot(){
-  document.getElementById('foot').innerHTML='<span>Week of '+fmtDate(D.weekOf||'2026-10-07')+'. Sources: your ChatGPT deal prompts, checked live at Target, Madewell, Abercrombie, On, Anthropologie, Ulta, Sephora, Steam, GOG and more. Prices change fast, so check the store before you buy.</span><span><button data-memexport="1">Export memory</button> &nbsp;·&nbsp; <button data-memimport="1">Import memory</button> &nbsp;·&nbsp; <button data-modal="bar">How the bar works</button> &nbsp;·&nbsp; <button data-modal="history">Past weeks</button></span>';
+  document.getElementById('foot').innerHTML='<span>Week of '+fmtDate(D.weekOf||'2026-10-07')+'. Sources: your ChatGPT deal prompts, checked live at Target, Madewell, Abercrombie, On, Anthropologie, Ulta, Sephora, Steam, GOG and more. Prices change fast, so check the store before you buy.</span><span><button data-memexport="1">Export memory</button> &nbsp;·&nbsp; <button data-memimport="1">Import memory</button> &nbsp;·&nbsp; <button data-go="import">Import deals</button> &nbsp;·&nbsp; <button data-modal="bar">How the bar works</button> &nbsp;·&nbsp; <button data-modal="history">Past weeks</button></span>';
 }
 function tick(){
   var els=document.querySelectorAll('[data-ends]');
@@ -2750,7 +2779,7 @@ function syncBoot(){
     try{ for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k&&SYNC_RE.test(k)&&(!items[k]||(syncMeta[k]||0)>items[k].t)){ if(!syncMeta[k]) syncMeta[k]=Date.now(); syncDirty[k]=1; } } }catch(e){}
     _lsSetRaw('dc4__meta',syncMeta); syncSoon();
     if(changed){ var seen=''; try{ seen=sessionStorage.getItem('dc4_pulled')||''; sessionStorage.setItem('dc4_pulled',String(maxT)); }catch(e){} if(seen!==String(maxT)){ location.reload(); return; } }
-    pullShared();
+    pullShared(); impLoadSite();
   }).catch(function(e){ SYNC.on=false; SYNC.state=(e===401||e===403)?'denied':'local'; userChip(); });
 }
 function pullShared(){
@@ -2886,6 +2915,232 @@ document.addEventListener('click',function(e){
   }
   if((t=e.target.closest('#userChip'))){ toast(t.title); return; }
 });
+
+
+/* ---------- import page and checker (runs the checks on Cloudflare) ---------- */
+var RETIRED={}, HIDDEN={};
+var IMP={mode:'import',rows:[],files:[],stats:null,busy:false,done:0};
+var IMP_SAMCAT={'Outdoors':'Adventure','Clothing':'Style','Hobby':'LEGO & hobby'};
+var IMP_RAECAT={'Fun home & creative':'Pretty things','Reading & creative':'Pretty things','Fun accessories':'Little extras','Fun beauty & self-care':'Body & scent'};
+var IMP_MOOD={'Adventure':['adventure'],'Style':['maincharacter'],'Gaming':['gamenight'],'Tech':['lockin'],'LEGO & hobby':['build'],'Fitness':['reset'],'Small stuff':['reset'],
+ 'Clothing':['maincharacter','datenight'],'Beauty & hair':['glassskin','pamper'],'Cozy':['cozy'],'Jewelry':['thinkingofyou','datenight'],'Bags':['maincharacter'],'Activewear':['reset'],
+ 'Fragrance':['datenight','pamper'],'Shoes':['maincharacter'],'Pretty things':['thinkingofyou'],'Little extras':['thinkingofyou'],'Body & scent':['pamper'],
+ 'Scent & body':['pamper'],'Together':['thinkingofyou'],'Pickleball':['adventure'],'Golf':['adventure'],'Home tools':['reset'],'Gadgets':['build'],'F1':['gamenight'],
+ 'Games':['gamenight'],'Hobby':['build'],'Music':['cozy']};
+var IMP_LFL=['Target','Old Navy','American Eagle','Amazon','Gap',"Kohl's",'UNIQLO','Walmart','H&M','Aerie'];
+function impNormUrl(u){ try{ var x=new URL(u); return (x.hostname.replace(/^www\./,'')+x.pathname.replace(/\/+$/,'')).toLowerCase(); }catch(e){ return String(u||'').toLowerCase(); } }
+function impNorm(s){ return String(s||'').toLowerCase().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').trim(); }
+function impHash(s){ var h=2166136261; for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+function impKeys(p){ var k=[]; if(p.url) k.push('u:'+impNormUrl(p.url)); if(p.store&&p.name) k.push('n:'+impNorm(p.store)+'|'+impNorm(p.name)); if(p.store&&p.store_product_id) k.push('p:'+impNorm(p.store)+'|'+impNorm(p.store_product_id)); if(p.id) k.push('id:'+p.id); return k; }
+function impSiteKeys(){ var k={}; DEALS.forEach(function(d){ if(!live(d)) return; impKeys(d).forEach(function(x){ k[x]=1; }); }); Object.keys(dnb||{}).forEach(function(id){ k['id:'+id]=1; }); Object.keys((SHARED&&SHARED.dnb)||{}).forEach(function(id){ k['id:'+id]=1; }); return k; }
+function impFill(p){ var n=0; for(var k in p) if(p[k]!=null&&p[k]!=='') n++; return n; }
+function impParse(obj,fname){
+  var out=[];
+  function add(list,who,src){ (list||[]).forEach(function(p){ if(p&&typeof p==='object'&&p.name&&p.url){ var q=Object.assign({},p); q._who=String(q['for']||q.who||who||'').toLowerCase(); q._src=src; out.push(q); } }); }
+  if(Array.isArray(obj)) add(obj,null,fname);
+  else if(obj&&obj.picks) add(obj.picks,obj['for'],fname);
+  else if(obj&&obj.people) obj.people.forEach(function(pp){ (pp.sources||[]).forEach(function(s){ var d=s.data||{}; add(d.picks,pp.person||d['for'],s.filename||fname); }); });
+  return out;
+}
+function impTitleMatch(name,title){
+  if(!title) return true;
+  var stop={'the':1,'and':1,'with':1,'for':1,'womens':1,'mens':1,'women':1,'men':1,'set':1,'new':1,'size':1,'pack':1};
+  var w=impNorm(name).split(' ').filter(function(x){ return x.length>2&&!stop[x]&&!/^\d+$/.test(x); });
+  if(w.length<2) return true;
+  var t=' '+impNorm(title)+' ', hit=w.filter(function(x){ return t.indexOf(' '+x)>=0; }).length;
+  return hit/w.length>=0.34;
+}
+function impScore(p,who,price,was,pct){
+  var fit=+p.fit_score||0, rt=+p.rating||0, rv=+p.reviews||0, s=50+0.45*Math.min(pct,80);
+  if(rt) s+=12*Math.max(0,Math.min(1,(rt-4.2)/0.6))*Math.min(Math.log10(Math.max(rv,1))/4.5,1);
+  return {fit:fit, deal:Math.round(Math.max(0,Math.min(99,s)))};
+}
+function impRole(d){
+  var n=String(d.name||'').toLowerCase(), c=d.cat;
+  if(c==='Activewear') return 'active'; if(c==='Fragrance'||c==='Beauty & hair'||c==='Body & scent'||c==='K-beauty') return 'beauty';
+  if(c==='Bags') return 'bag'; if(c==='Jewelry') return 'jewelry'; if(c==='Shoes') return 'shoes'; if(c==='Coats') return 'outer';
+  if(c==='Little extras'||c==='Pretty things') return 'accessory';
+  if(c==='Cozy') return /cardi/.test(n)?'layer':'lounge';
+  if(/dress|romper|jumpsuit/.test(n)) return 'dress';
+  if(/jean|pant|skirt|skort|trouser|short|legging/.test(n)) return 'bottom';
+  if(/cardigan|jacket|blazer|coat|vest|shacket/.test(n)) return 'layer';
+  return 'top';
+}
+function impBuild(row){
+  var p=row.p, r=row.r||{}, who=p._who, note=p.note||null;
+  if(['sam','rachel','mom','dad','ben'].indexOf(who)<0) return {skip:'No person on this pick'};
+  var price=+p.price, was=p.was?+p.was:null;
+  if(!(price>0)) return {skip:'No price'};
+  if(r.state==='ok'&&r.price>0&&Math.abs(r.price-price)/price>0.03){
+    if(was&&Math.abs(r.price-was)/was<0.02) note=(note?note+'. ':'')+'Deal price applies at checkout. Store page shows $'+r.price;
+    else { note=(note?note+'. ':'')+'Price checked live (was listed at $'+price+')'; price=r.price; }
+  }
+  if(r.state==='blocked') note=(note?note+'. ':'')+'Store blocks automatic checks. Confirm the price on the page';
+  if(was&&was<=price) was=null;
+  var pct=was?Math.round((1-price/was)*100):0;
+  var cat=p.category||'Other'; if(cat.indexOf('|')>=0) cat=cat.split('|')[0].trim();
+  if(who==='sam') cat=IMP_SAMCAT[cat]||cat; if(who==='rachel') cat=IMP_RAECAT[cat]||cat;
+  var ms=IMP_MOOD[cat]||['thinkingofyou'], MP={}; (D.moods||[]).forEach(function(m){ MP[m.id]=m; });
+  var e=0,i=0; ms.forEach(function(m){ e+=(MP[m]||{e:0}).e; i+=(MP[m]||{i:0}).i; }); e/=ms.length; i/=ms.length;
+  var h=impHash(p.name), jx=((h&255)/255-.5)*.18, jy=(((h>>8)&255)/255-.5)*.18;
+  var img=(r.state==='ok'&&r.img)?r.img:(p.img||null);
+  var d={id:row.id,who:who,name:p.name,brand:p.brand||p.store,store:p.store,price:Math.round(price*100)/100,was:was,pct:pct,img:img,url:p.url,cat:cat,moods:ms,
+    e:Math.round(Math.max(-.97,Math.min(.97,e+jx))*1000)/1000,i:Math.round(Math.max(-.97,Math.min(.97,i+jy))*1000)/1000,why:p.why||'',ends:p.ends||null,code:p.code||null,note:note,
+    spid:p.store_product_id||null,src:r.state==='ok'?'Checked by the site '+new Date().toISOString().slice(0,10):'Not auto-checked',imported:Date.now()};
+  if(p.rating){ d.rating=+p.rating; d.reviews=+p.reviews||0; }
+  var sc=impScore(p,who,price,was,pct);
+  if(who==='rachel'){
+    var fit=sc.fit; d.her=p.why||''; d.score=fit; d.raeScore=fit; d.tier='B';
+    var RW=[25,20,15,15,10,10,5],RK=['aesthetic','quality','fit','relevance','versatility','value','distinct'],rb={}; RK.forEach(function(k,j){ rb[k]=Math.round(RW[j]*fit/100); }); d.rubric=rb;
+    if(p.looks_for_less||IMP_LFL.indexOf(p.store)>=0) d.tag='Looks for less';
+    d.role=impRole(d);
+    var gate=(price<=50||d.tag)?75:78; d.label=fit>=85?'Strong buy':(fit>=78?'Good candidate':'Budget find');
+    if(price<=50&&fit<78) d.budgetFind=true;
+    if(fit<gate) return {skip:'Below Rachel’s bar ('+fit+')'};
+  } else {
+    d.score=sc.deal; d.fit=sc.fit;
+    d.label=sc.deal>=88?'Steal':(sc.deal>=80?'Great deal':(sc.deal>=72?'Solid deal':'Good pick'));
+    if(sc.fit<75||(sc.deal<72&&pct<20)) return {skip:'Below the bar'};
+    if(sc.deal<72&&sc.fit>=85) d.score=72;
+  }
+  return {deal:d};
+}
+var IMP_STATE={ok:['Checked','ok'],blocked:['Not checked','warn'],dead:['Broken link','bad'],sold_out:['Sold out','bad'],mismatch:['Wrong product','bad'],bad_link:['Bad link','bad'],error:['Error','bad'],wait:['Waiting','wait'],dup:['Repeat','skip']};
+function impRowState(row){ if(!row.r) return 'wait'; if(row.r.state==='ok'&&!impTitleMatch(row.p.name,row.r.title)) return 'mismatch'; return row.r.state; }
+function vImport(){
+  var h='<section class="fam-head"><p class="fam-k">Deal checker</p><h1>Import deals</h1><p class="fam-b">Drop in today’s ChatGPT result files. The site combines them, removes repeats and anything already on the site, then opens every product page to check the link, price, stock and photo.</p>'+
+   '<div class="seg imseg"><button data-imode="import"'+(IMP.mode==='import'?' class="on"':'')+'>Import new deals</button><button data-imode="recheck"'+(IMP.mode==='recheck'?' class="on"':'')+'>Recheck the whole site</button><button data-imode="hidden"'+(IMP.mode==='hidden'?' class="on"':'')+'>Hidden ('+Object.keys(HIDDEN).length+')</button></div></section>';
+  if(!SYNC.on) return h+'<div class="empty"><strong>Sign in first</strong><span>Importing works on the website after you sign in, not on a local copy.</span></div>';
+  if(IMP.mode==='hidden'){
+    var ids=Object.keys(HIDDEN).sort(function(a,b){ return (HIDDEN[b].at||0)-(HIDDEN[a].at||0); });
+    return h+(ids.length?'<div class="imtable">'+ids.map(function(id){ var x=HIDDEN[id], d=x.deal||{};
+      return '<div class="imrow">'+(d.img?'<img src="'+esc(d.img)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="imph"></span>')+'<div class="imn"><b>'+esc(d.name||id)+'</b><span>'+esc(FAMN[d.who]||NAMES[d.who]||'')+(d.store?' \u00b7 '+esc(d.store):'')+' \u00b7 hidden: '+esc(x.reason||'')+'</span></div>'+(d.url?'<a class="lnk" href="'+esc(d.url)+'" target="_blank" rel="noopener">Open</a>':'')+'<button class="btn sec sm" data-imrestore="'+id+'">Restore</button></div>'; }).join('')+'</div>':'<div class="empty"><strong>Nothing hidden</strong><span>Deals you hide from a recheck show up here, so you can bring them back.</span></div>');
+  }
+  if(IMP.mode==='import') h+='<label class="imdrop" id="imDrop"><input type="file" id="imFile" accept=".json,application/json" multiple hidden><b>Drop .json files here</b><span>or click to choose. You can pick many at once, or one master file.</span></label>';
+  else h+='<div class="imdrop static"><b>Recheck every deal on the site</b><span>Finds broken links, sold out items and links that open the wrong product, so you can hide them in one click.</span><button class="btn pri" data-imrecheck="1">Start recheck</button></div>';
+  h+='<div id="imOut"></div>';
+  return h;
+}
+function impRender(){
+  var el=document.getElementById('imOut'); if(!el) return;
+  var rows=IMP.rows; if(!rows.length&&!IMP.stats){ el.innerHTML=''; return; }
+  var c={}; rows.forEach(function(r){ var s=r.dup?'dup':impRowState(r); c[s]=(c[s]||0)+1; });
+  var total=rows.filter(function(r){return !r.dup;}).length, checked=rows.filter(function(r){return r.r&&!r.dup;}).length;
+  var h='<div class="imsum">'+(IMP.stats?'<span><b>'+IMP.stats.files+'</b> files</span><span><b>'+IMP.stats.picks+'</b> picks</span><span><b>'+IMP.stats.repeats+'</b> repeats removed</span><span><b>'+IMP.stats.onsite+'</b> already on the site</span>':'')+
+    Object.keys(IMP_STATE).filter(function(k){return c[k]&&k!=='dup';}).map(function(k){ return '<span class="st '+IMP_STATE[k][1]+'"><b>'+c[k]+'</b> '+IMP_STATE[k][0]+'</span>'; }).join('')+'</div>';
+  h+='<div class="improg"><i style="width:'+(total?Math.round(100*checked/total):0)+'%"></i></div>';
+  if(IMP.mode==='import'){
+    var add=rows.filter(function(r){ return !r.dup&&r.r&&r.inc; }).length;
+    h+='<div class="imact">'+(IMP.busy?'<span class="whint">Checking '+checked+' of '+total+'… keep this tab open.</span>':'<button class="btn pri" data-imsave="1"'+(add?'':' disabled')+'>Add '+add+' deal'+(add===1?'':'s')+' to the site</button><span class="whint">Checked items are ticked. Untick anything you don’t want.</span>')+'</div>';
+  } else {
+    var bad=rows.filter(function(r){ return r.r&&r.inc&&['dead','sold_out','mismatch','bad_link'].indexOf(impRowState(r))>=0; }).length;
+    var upd=rows.filter(function(r){ return r.r&&r.r.state==='ok'&&impRowState(r)==='ok'&&((r.r.price>0&&r.d.price&&Math.abs(r.r.price-r.d.price)/r.d.price>0.03)||(!r.d.img&&r.r.img)); }).length;
+    h+='<div class="imact">'+(IMP.busy?'<span class="whint">Checking '+checked+' of '+total+'… keep this tab open.</span>':'<button class="btn pri" data-imretire="1"'+(bad?'':' disabled')+'>Hide '+bad+' problem deal'+(bad===1?'':'s')+'</button><button class="btn sec" data-imupdate="1"'+(upd?'':' disabled')+'>Update '+upd+' price'+(upd===1?'':'s')+' and photos</button>')+'</div>';
+  }
+  var order={mismatch:0,dead:1,sold_out:2,bad_link:3,error:4,blocked:5,ok:6,wait:7,dup:8};
+  var show=rows.filter(function(r){ return !r.dup; }).slice().sort(function(a,b){ return order[impRowState(a)]-order[impRowState(b)]; });
+  h+='<div class="imtable">'+show.slice(0,400).map(function(r){
+    var s=impRowState(r), st=IMP_STATE[s]||IMP_STATE.error, p=r.p, img=(r.r&&r.r.img)||p.img;
+    var why=r.skip?' · '+esc(r.skip):(s==='mismatch'&&r.r?' · page says “'+esc((r.r.title||'').slice(0,60))+'”':'');
+    var price=(r.r&&r.r.price>0&&p.price&&Math.abs(r.r.price-p.price)/p.price>0.03)?'$'+p.price+' → <b>$'+r.r.price+'</b>':'$'+(p.price||'?');
+    return '<div class="imrow"><input type="checkbox" data-iminc="'+r.k+'"'+(r.inc?' checked':'')+(r.r&&!r.skip?'':' disabled')+'>'+(img?'<img src="'+esc(img)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="imph"></span>')+
+      '<div class="imn"><b>'+esc(p.name)+'</b><span>'+esc(FAMN[p._who]||NAMES[p._who]||p._who||'')+' · '+esc(p.store||'')+' · '+price+why+'</span></div><span class="st '+st[1]+'">'+st[0]+'</span><a class="lnk" href="'+esc(p.url)+'" target="_blank" rel="noopener">Open</a></div>';
+  }).join('')+(show.length>400?'<p class="whint">Showing the first 400.</p>':'')+'</div>';
+  el.innerHTML=h;
+}
+function impDefaultInc(r){
+  var s=impRowState(r);
+  if(IMP.mode==='recheck') return ['dead','sold_out','mismatch','bad_link'].indexOf(s)>=0;
+  if(s!=='ok'&&s!=='blocked') return false;
+  var b=impBuild(r); r.skip=b.skip||null; r.deal=b.deal||null; return !!b.deal;
+}
+function impRun(){
+  var todo=IMP.rows.filter(function(r){ return !r.dup&&!r.r; }); if(!todo.length){ IMP.busy=false; impRender(); return; }
+  IMP.busy=true; impRender();
+  var size=IMP.retrying?1:3, i=0, lanes=4, lastDraw=0;
+  function finish(){
+    var again=IMP.rows.filter(function(r){ return !r.dup&&r.r&&r.r.state==='error'&&!r.retried; });
+    if(again.length&&!IMP.retrying){ again.forEach(function(r){ r.retried=1; r.r=null; }); IMP.retrying=true; impRun(); return; }
+    IMP.retrying=false; IMP.busy=false; impRender(); toast('Check finished');
+  }
+  function next(){
+    if(i>=todo.length){ lanes--; if(!lanes) finish(); return; }
+    var batch=todo.slice(i,i+size); i+=size;
+    api('check',{method:'POST',body:JSON.stringify({items:batch.map(function(r){ return {key:r.k,url:r.p.url,store:r.p.store,name:r.p.name}; })})})
+      .then(function(res){ (res.results||[]).forEach(function(x){ var r=IMP.rows[x.key]; if(!r) return; r.r=x; r.id=x.id||r.id; r.inc=impDefaultInc(r); }); })
+      .catch(function(){ batch.forEach(function(r){ r.r={state:'error'}; r.inc=false; }); })
+      .then(function(){ if(Date.now()-lastDraw>700){ lastDraw=Date.now(); impRender(); } next(); });
+  }
+  var start=lanes; for(var l=0;l<start;l++) next();
+}
+function impLoadFiles(files){
+  var list=[].slice.call(files||[]); if(!list.length) return;
+  Promise.all(list.map(function(f){ return f.text().then(function(t){ try{ return impParse(JSON.parse(t),f.name); }catch(e){ toast(f.name+' is not valid JSON'); return []; } }); })).then(function(all){
+    var picks=[].concat.apply([],all), site=impSiteKeys(), seen={}, rows=[], rep=0, onsite=0;
+    picks.sort(function(a,b){ return impFill(b)-impFill(a); });
+    picks.forEach(function(p){
+      var ks=impKeys(p);
+      if(ks.some(function(k){ return site[k]; })){ onsite++; return; }
+      if(ks.some(function(k){ return seen[k]; })){ rep++; return; }
+      ks.forEach(function(k){ seen[k]=1; });
+      rows.push({k:rows.length,p:p,r:null,inc:false});
+    });
+    IMP.rows=rows; IMP.stats={files:list.length,picks:picks.length,repeats:rep,onsite:onsite};
+    impRender(); impRun();
+  });
+}
+function impRecheck(){
+  var rows=[]; DEALS.forEach(function(d){ if(!d.url||!live(d)) return; rows.push({k:rows.length,p:{name:d.name,store:d.store,url:d.url,price:d.price,img:d.img,_who:d.who},d:d,id:d.id,r:null,inc:false}); });
+  IMP.rows=rows; IMP.stats=null; impRender(); impRun();
+}
+function impMerge(list,retired,info){
+  (retired||[]).forEach(function(id){ RETIRED[id]=1; var x=(info&&info[id])||{}; HIDDEN[id]={reason:x.reason||(HIDDEN[id]&&HIDDEN[id].reason)||'',at:x.at||Date.now(),deal:x.deal||BY[id]||(HIDDEN[id]&&HIDDEN[id].deal)||null}; });
+  if(retired&&retired.length){ DEALS=DEALS.filter(function(d){ return !RETIRED[d.id]; }); retired.forEach(function(id){ delete BY[id]; }); }
+  (list||[]).forEach(function(d){ if(!d||!d.id) return; if(RETIRED[d.id]){ delete RETIRED[d.id]; delete HIDDEN[d.id]; } d.saved$=(d.was&&d.price!=null)?Math.round((d.was-d.price)*100)/100:0; if(BY[d.id]){ Object.assign(BY[d.id],d); } else { DEALS.push(d); BY[d.id]=d; } });
+}
+function impLoadSite(){ if(!SYNC.on) return; api('deals').then(function(r){ var info={}; (r.hidden||[]).forEach(function(x){ info[x.id]=x; }); impMerge([],r.retired,info); impMerge(r.deals,[]); render(); }).catch(function(){}); }
+function impSave(list,label){
+  var chunks=[]; for(var i=0;i<list.length;i+=50) chunks.push(list.slice(i,i+50));
+  var n=0;
+  return chunks.reduce(function(pr,ch){ return pr.then(function(){ return api('deals',{method:'POST',body:JSON.stringify({deals:ch})}).then(function(r){ n+=r.saved||0; }); }); },Promise.resolve())
+    .then(function(){ impMerge(list,[]); toast(label.replace('#',n)); return n; });
+}
+document.addEventListener('click',function(e){
+  var t;
+  if((t=e.target.closest('[data-imode]'))){ IMP.mode=t.getAttribute('data-imode'); IMP.rows=[]; IMP.stats=null; render(); return; }
+  if((t=e.target.closest('[data-imrecheck]'))){ if(!IMP.busy) impRecheck(); return; }
+  if((t=e.target.closest('[data-iminc]'))){ var r=IMP.rows[+t.getAttribute('data-iminc')]; if(r) r.inc=t.checked; var keep=window.scrollY; impRender(); window.scrollTo(0,keep); return; }
+  if((t=e.target.closest('[data-imsave]'))){
+    var list=IMP.rows.filter(function(r){ return !r.dup&&r.inc&&r.deal; }).map(function(r){ return r.deal; });
+    if(!list.length) return; t.disabled=true;
+    impSave(list,'Added # deals to the site').then(function(){ IMP.rows=[]; IMP.stats=null; impRender(); }).catch(function(){ t.disabled=false; toast('Could not save. Try again'); });
+    return;
+  }
+  if((t=e.target.closest('[data-imretire]'))){
+    var items=IMP.rows.filter(function(r){ return r.inc&&r.r&&['dead','sold_out','mismatch','bad_link'].indexOf(impRowState(r))>=0; }).map(function(r){ return {id:r.id,reason:IMP_STATE[impRowState(r)][0]}; });
+    if(!items.length) return; t.disabled=true;
+    api('retire',{method:'POST',body:JSON.stringify({items:items})}).then(function(){ var info={}; items.forEach(function(x){ info[x.id]={reason:x.reason,at:Date.now()}; }); impMerge([],items.map(function(x){return x.id;}),info); IMP.rows=IMP.rows.filter(function(r){ return !(r.inc&&items.some(function(x){return x.id===r.id;})); }); toast('Hid '+items.length+' deals'); impRender(); }).catch(function(){ t.disabled=false; toast('Could not save. Try again'); });
+    return;
+  }
+  if((t=e.target.closest('[data-imrestore]'))){
+    var rid=t.getAttribute('data-imrestore'), hd=HIDDEN[rid]; t.disabled=true;
+    api('retire',{method:'POST',body:JSON.stringify({items:[],restore:[rid]})}).then(function(){ delete RETIRED[rid]; delete HIDDEN[rid]; if(hd&&hd.deal&&!BY[hd.deal.id]){ DEALS.push(hd.deal); BY[hd.deal.id]=hd.deal; } toast('Restored'); render(); }).catch(function(){ t.disabled=false; toast('Could not restore. Try again'); });
+    return;
+  }
+  if((t=e.target.closest('[data-imupdate]'))){
+    var ups=IMP.rows.filter(function(r){ return r.r&&r.r.state==='ok'&&impRowState(r)==='ok'; }).map(function(r){ var d=Object.assign({},r.d), ch=false;
+      if(r.r.price>0&&d.price&&Math.abs(r.r.price-d.price)/d.price>0.03&&!(d.was&&Math.abs(r.r.price-d.was)/d.was<0.02)){ d.price=r.r.price; d.pct=d.was&&d.was>d.price?Math.round((1-d.price/d.was)*100):0; if(!d.pct) d.was=null; ch=true; }
+      if(!d.img&&r.r.img){ d.img=r.r.img; ch=true; }
+      return ch?d:null; }).filter(Boolean);
+    if(!ups.length) return; t.disabled=true;
+    impSave(ups,'Updated # deals').then(function(){ impRender(); }).catch(function(){ t.disabled=false; toast('Could not save. Try again'); });
+    return;
+  }
+});
+document.addEventListener('change',function(e){ if(e.target&&e.target.id==='imFile') impLoadFiles(e.target.files); });
+document.addEventListener('dragover',function(e){ if(route==='import'&&e.target.closest&&e.target.closest('#imDrop')){ e.preventDefault(); e.target.closest('#imDrop').classList.add('over'); } });
+document.addEventListener('dragleave',function(e){ var z=e.target.closest&&e.target.closest('#imDrop'); if(z) z.classList.remove('over'); });
+document.addEventListener('drop',function(e){ var z=route==='import'&&e.target.closest&&e.target.closest('#imDrop'); if(!z) return; e.preventDefault(); z.classList.remove('over'); impLoadFiles(e.dataTransfer.files); });
 
 /* ---------- boot ---------- */
 renderEventBar(); renderFoot(); syncSaved(); buildFlora(); wishCount(); syncBoot();
