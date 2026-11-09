@@ -2971,7 +2971,7 @@ function impStoreImg(u){
   if(/bestbuy\.com/i.test(u)&&(m=u.match(/skuId=(\d{7})/i)||u.match(/\/(\d{7})\.p(?:[?#\/]|$)/)||u.match(/\/sku\/(\d{7})/i)||u.match(/\/product\/[^?#]*\/(\d{7})(?:[?#\/]|$)/))) return 'https://pisces.bbystatic.com/image2/BestBuy_US/images/products/'+m[1].slice(0,4)+'/'+m[1]+'_sd.jpg';
   return null;
 }
-function impBuild(row){
+function impBuild(row,force){
   var p=row.p, r=row.r||{}, who=p._who, note=p.note||null;
   if(['sam','rachel','mom','dad','ben'].indexOf(who)<0) return {skip:'No person on this pick'};
   var price=+p.price, was=p.was?+p.was:null;
@@ -3001,17 +3001,18 @@ function impBuild(row){
     d.role=impRole(d);
     var gate=(price<=50||d.tag)?75:78; d.label=fit>=85?'Strong buy':(fit>=78?'Good candidate':'Budget find');
     if(price<=50&&fit<78) d.budgetFind=true;
-    if(fit<gate) return {skip:'Below Rachel’s bar ('+fit+')'};
+    if(fit<gate&&!force) return {skip:'Below Rachel’s bar ('+fit+')'};
   } else {
     d.score=sc.deal; d.fit=sc.fit;
     d.label=sc.deal>=88?'Steal':(sc.deal>=80?'Great deal':(sc.deal>=72?'Solid deal':'Good pick'));
-    if(sc.fit<75||(sc.deal<72&&pct<20)) return {skip:'Below the bar'};
-    if(sc.deal<72&&sc.fit>=85) d.score=72;
+    if(!force&&(sc.fit<75||(sc.deal<72&&pct<20&&!(pct>=10&&sc.fit>=80)))) return {skip:'Below the bar'};
+    if(sc.deal<72&&pct<10){ d.label=pct?'Small discount':'Full price pick'; }
+    if(sc.deal<72&&(sc.fit>=85||force)) d.score=72;
   }
   return {deal:d};
 }
 var IMP_STATE={ok:['Checked','ok'],blocked:['Not checked','warn'],dead:['Broken link','bad'],sold_out:['Sold out','bad'],mismatch:['Wrong product','bad'],bad_link:['Bad link','bad'],error:['Error','bad'],wait:['Waiting','wait'],dup:['Repeat','skip']};
-function impRowState(row){ if(!row.r) return 'wait'; if(row.r.state==='ok'&&/client challenge|security check|verify you are human|robot check/i.test(row.r.title||'')) return 'blocked'; if(row.r.state==='ok'&&!impTitleMatch(row.p.name,row.r.title)) return 'mismatch'; return row.r.state; }
+function impRowState(row){ if(!row.r) return 'wait'; if(row.r.state==='ok'&&/client challenge|security check|verify you are human|robot check|robot or human|are you a human|access denied/i.test(row.r.title||'')) return 'blocked'; if(row.r.state==='ok'&&!impTitleMatch(row.p.name,row.r.title)) return 'mismatch'; return row.r.state; }
 function vImport(){
   var h='<section class="fam-head"><p class="fam-k">Deal checker</p><h1>Import deals</h1><p class="fam-b">Drop in today’s ChatGPT result files. The site combines them, removes repeats and anything already on the site, then opens every product page to check the link, price, stock and photo.</p>'+
    '<div class="seg imseg"><button data-imode="import"'+(IMP.mode==='import'?' class="on"':'')+'>Import new deals</button><button data-imode="recheck"'+(IMP.mode==='recheck'?' class="on"':'')+'>Recheck the whole site</button><button data-imode="hidden"'+(IMP.mode==='hidden'?' class="on"':'')+'>Hidden ('+Object.keys(HIDDEN).length+')</button></div></section>';
@@ -3046,9 +3047,9 @@ function impRender(){
   var show=rows.filter(function(r){ return !r.dup; }).slice().sort(function(a,b){ return order[impRowState(a)]-order[impRowState(b)]; });
   h+='<div class="imtable">'+show.slice(0,400).map(function(r){
     var s=impRowState(r), st=IMP_STATE[s]||IMP_STATE.error, p=r.p, img=(r.r&&r.r.img)||p.img;
-    var why=r.skip?' · '+esc(r.skip):(s==='mismatch'&&r.r?' · page says “'+esc((r.r.title||'').slice(0,60))+'”':'');
+    var why=r.skip?' · '+esc(r.skip)+(/bar/.test(r.skip)?(r.inc?' · adding anyway':' · tick to add anyway'):''):(s==='mismatch'&&r.r?' · page says “'+esc((r.r.title||'').slice(0,60))+'”':'');
     var price=(r.r&&r.r.price>0&&p.price&&Math.abs(r.r.price-p.price)/p.price>0.03)?'$'+p.price+' → <b>$'+r.r.price+'</b>':'$'+(p.price||'?');
-    return '<div class="imrow"><input type="checkbox" data-iminc="'+r.k+'"'+(r.inc?' checked':'')+(r.r&&!r.skip?'':' disabled')+'>'+(img?'<img src="'+esc(img)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="imph"></span>')+
+    return '<div class="imrow"><input type="checkbox" data-iminc="'+r.k+'"'+(r.inc?' checked':'')+(r.r&&(!r.skip||/bar/.test(r.skip))?'':' disabled')+'>'+(img?'<img src="'+esc(img)+'" alt="" loading="lazy" referrerpolicy="no-referrer">':'<span class="imph"></span>')+
       '<div class="imn"><b>'+esc(p.name)+'</b><span>'+esc(FAMN[p._who]||NAMES[p._who]||p._who||'')+' · '+esc(p.store||'')+' · '+price+why+'</span></div><span class="st '+st[1]+'">'+st[0]+'</span><a class="lnk" href="'+esc(p.url)+'" target="_blank" rel="noopener">Open</a></div>';
   }).join('')+(show.length>400?'<p class="whint">Showing the first 400.</p>':'')+'</div>';
   el.innerHTML=h;
@@ -3114,7 +3115,7 @@ document.addEventListener('click',function(e){
   var t;
   if((t=e.target.closest('[data-imode]'))){ IMP.mode=t.getAttribute('data-imode'); IMP.rows=[]; IMP.stats=null; render(); return; }
   if((t=e.target.closest('[data-imrecheck]'))){ if(!IMP.busy) impRecheck(); return; }
-  if((t=e.target.closest('[data-iminc]'))){ var r=IMP.rows[+t.getAttribute('data-iminc')]; if(r) r.inc=t.checked; var keep=window.scrollY; impRender(); window.scrollTo(0,keep); return; }
+  if((t=e.target.closest('[data-iminc]'))){ var r=IMP.rows[+t.getAttribute('data-iminc')]; if(r){ r.inc=t.checked; if(t.checked&&r.skip&&!r.deal){ var fb=impBuild(r,true); r.deal=fb.deal||null; if(!r.deal) r.inc=false; } } var keep=window.scrollY; impRender(); window.scrollTo(0,keep); return; }
   if((t=e.target.closest('[data-imsave]'))){
     var list=IMP.rows.filter(function(r){ return !r.dup&&r.inc&&r.deal; }).map(function(r){ return r.deal; });
     if(!list.length) return; t.disabled=true;
