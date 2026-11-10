@@ -1055,6 +1055,18 @@ body[data-world="rachel"] .shb.liked{color:#C2185B}
 body.scene-sea,body.scene-forest{background:#03070f}
 body.scene-sea::before,body.scene-forest::before{opacity:0}
 body.scene-sea .foot,body.scene-forest .foot{background:transparent}
+.cwho{position:fixed;inset:0;z-index:200;background:rgba(3,6,12,.55);backdrop-filter:blur(4px);display:grid;place-items:center;padding:16px;animation:fade .2s ease}
+.cwbox{background:var(--card);border:1px solid var(--line2);border-radius:20px;padding:20px 22px;max-width:420px;width:100%;box-shadow:var(--shadow)}
+.cwbox h3{font-size:19px}
+.cwbox>p{color:var(--ink2);font-size:13.5px;margin-top:4px}
+.cwq{display:block;font-weight:600;margin:14px 0 8px}
+.cwchips{display:flex;flex-wrap:wrap;gap:8px}
+.cwnote{font-size:12.5px;color:var(--ink3);margin-top:14px}
+.cwact{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.mcfor{color:var(--accent2)}
+.mcst.bought{color:var(--good)}
+.mcst.skip{color:var(--hot)}
+.mcb .btn.on{border-color:var(--accent);color:var(--ink)}
 .dnbnote{margin-top:10px;font-weight:600;color:#FF5C6C;font-size:13px}
 .wsteps{display:flex;flex-wrap:wrap;gap:10px;list-style:none;margin:18px 0 4px}
 .wsteps li{display:flex;align-items:center;gap:10px;padding:10px 14px 10px 10px;border:1px solid var(--line);border-radius:14px;background:var(--card);font-weight:600}
@@ -1739,7 +1751,7 @@ function toggleSave(id){
   var d=BY[id];
   var k=-1; for(var j=0;j<saved.length;j++){ if(saved[j].id===id){ k=j; break; } }
   if(k>=0){ saved.splice(k,1); toast('Removed from saved'); }
-  else if(d){ var who = route==='rachel' ? 'rachel' : (route==='sam' ? 'sam' : (FAM.indexOf(d.who)>=0 ? d.who : (d.who==='rachel' ? 'rachel' : 'sam'))); saved.push({id:id,'for':who,target:null,snap:snapOf(d)}); toast(saveMsg(who)); }
+  else if(d){ var who = ME; saved.push({id:id,'for':who,target:null,snap:snapOf(d)}); toast(saveMsg(who)); }
   lsSet('dc4_saved',saved); syncSaved(id);
   if(route==='saved') render();
 }
@@ -2794,7 +2806,7 @@ function api(path,opt){
 }
 function him(w){ return w==='rachel'?'her':'him'; }
 function saveMsg(w){
-  if(w===ME) return ME==='rachel'?'Saved to your favorites':'Added to your watchlist';
+  if(w===ME) return 'Added to your likes. '+(SYNC.on?NAMES[OTHER]+' can see it':'');
   if(FAM.indexOf(w)>=0) return 'Saved for '+FAMN[w];
   return 'Added to gifts for '+NAMES[w]+(SYNC.on?'. Hidden from '+him(w):'');
 }
@@ -2844,6 +2856,36 @@ function pullShared(){
   }).catch(function(){});
 }
 setInterval(function(){ if(!document.hidden) pullShared(); },60000);
+/* keep my own data in step across devices: pull newer copies on focus and every 30s */
+function syncRefreshVars(){
+  saved=lsGet('dc4_saved',[]); dnb=lsGet('dc4_dnb',{}); wish=lsGet('dc4_wish',[]); claims=lsGet('dc4_claims',{});
+  if(typeof myCart!=='undefined') myCart=lsGet('dc4_cart_mine',[]);
+  CART={};
+  var sc=document.getElementById('savedCount'); if(sc) sc.textContent=saved.length;
+  if(typeof cartCount==='function') cartCount(); wishCount();
+  var a=document.activeElement, sh=document.getElementById('sheet');
+  if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)) return;
+  if(sh&&sh.classList.contains('on')) return;
+  if(route==='wish') renderWishLists(); else if(route!=='import') render();
+}
+var mineBusy=false;
+function syncPullMine(){
+  if(!SYNC.on||mineBusy) return; mineBusy=true;
+  api('state').then(function(s){
+    mineBusy=false;
+    var items=(s&&s.items)||{}, ch=0;
+    Object.keys(items).forEach(function(k){
+      if(!SYNC_RE.test(k)||syncDirty[k]) return;
+      if(items[k].t>(syncMeta[k]||0)){ try{ if(localStorage.getItem(k)!==items[k].v){ localStorage.setItem(k,items[k].v); ch++; } }catch(e){} syncMeta[k]=items[k].t; }
+    });
+    _lsSetRaw('dc4__meta',syncMeta);
+    if(ch) syncRefreshVars();
+  }).catch(function(){ mineBusy=false; });
+}
+document.addEventListener('visibilitychange',function(){ if(!document.hidden) syncPullMine(); });
+window.addEventListener('focus',syncPullMine);
+setInterval(function(){ if(!document.hidden) syncPullMine(); },30000);
+setTimeout(syncPullMine,2500);
 
 /* badges on every deal card */
 function otherLiked(id){ return (SHARED.saved||[]).some(function(s){ return s&&s.id===id; }); }
@@ -2873,8 +2915,8 @@ ICON.cart='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
 ICON.x='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
 var myCart=lsGet('dc4_cart_mine',[]);
 function inCart(id){ return myCart.some(function(c){ return c.id===id; }); }
-function cartCount(){ var el=document.getElementById('cartCount'); if(el){ var n=myCart.filter(function(c){ return !c.got&&BY[c.id]; }).length; el.textContent=n; el.style.display=n?'':'none'; } }
-function cartBtn(id){ var on=inCart(id); return '<button class="ib cartib'+(on?' on':'')+'" data-cart="'+id+'" aria-label="'+(on?'Remove from my cart':'Add to my cart')+'" title="'+(on?'In your cart':'Add to my cart')+'">'+ICON.cart+'</button>'; }
+function cartCount(){ var el=document.getElementById('cartCount'); if(el){ var n=myCart.filter(function(c){ return !c.st&&!c.got&&BY[c.id]; }).length; el.textContent=n; el.style.display=n?'':'none'; } }
+function cartBtn(id){ var on=inCart(id); return '<button class="ib cartib'+(on?' on':'')+'" data-cart="'+id+'" aria-label="'+(on?'In your cart':'Add to my cart')+'" title="'+(on?'In your cart':'Add to my cart')+'">'+ICON.cart+'</button>'; }
 function rmBtn(id){ var on=!!dnb[id]; return '<button class="ib rmib'+(on?' on':'')+'" data-rm="'+id+'" aria-label="'+(on?'Bring back':'Remove, don’t buy')+'" title="'+(on?'Bring back':'Remove, don’t buy')+'">'+ICON.x+'</button>'; }
 var _mcCard=card;
 card=function(d,o){
@@ -2882,14 +2924,35 @@ card=function(d,o){
   var h=_mcCard(d,o), eye='aria-label="Quick look">'+ICON.eye+'</button>';
   return h.indexOf(eye)>=0 ? h.replace(eye, eye+cartBtn(d.id)+rmBtn(d.id)) : h;
 };
+function cartWhoList(){ var L=[[ME,'Me']]; L.push([OTHER,NAMES[OTHER]]); ['mom','dad','ben'].forEach(function(k){ L.push([k,FAMN[k]]); }); return L; }
+function cartGuess(d){ if(!d) return ME; if(d.who==='both') return ME; if(d.who===OTHER||d.who===ME||FAM.indexOf(d.who)>=0) return d.who; return ME; }
 function cartToggle(id){
-  var k=-1; myCart.forEach(function(c,i){ if(c.id===id) k=i; });
-  if(k>=0){ myCart.splice(k,1); toast('Removed from your cart'); }
-  else { myCart.push({id:id,t:Date.now()}); toast('In your cart. Only you can see it'); }
+  var d=BY[id], cur=null; myCart.forEach(function(c){ if(c.id===id) cur=c; });
+  var pick=cur?(cur['for']||cartGuess(d)):cartGuess(d);
+  var old=document.getElementById('cwho'); if(old) old.remove();
+  var h='<div class="cwho" id="cwho" data-cwclose="1"><div class="cwbox" role="dialog" aria-label="Who is this for"><h3>'+(cur?'In your cart':'Add to cart')+'</h3><p>'+esc(d?dname(d):'')+'</p><span class="cwq">Who is it for?</span><div class="cwchips">'+
+    cartWhoList().map(function(w){ return '<button class="chip'+(w[0]===pick?' on':'')+'" data-cwpick="'+w[0]+'">'+esc(w[1])+'</button>'; }).join('')+'</div>'+
+    '<p class="cwnote">🔒 Only you can see your cart. It follows you to every device.</p><div class="cwact">'+(cur?'<button class="btn sec sm" data-cwrm="1">Remove from cart</button>':'')+'<button class="btn sec sm" data-cwclose="1">Cancel</button></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+  var box=document.getElementById('cwho'); box._id=id;
+}
+function cartSet(id,who){
+  var cur=null; myCart.forEach(function(c){ if(c.id===id) cur=c; });
+  if(who===null){ myCart=myCart.filter(function(c){ return c.id!==id; }); toast('Removed from your cart'); }
+  else if(cur){ cur['for']=who; toast('Moved to '+(who===ME?'your own list':'gifts for '+(who===OTHER?NAMES[OTHER]:FAMN[who]))); }
+  else { myCart.push({id:id,'for':who,t:Date.now()}); toast(who===ME?'In your cart':'In your cart as a gift for '+(who===OTHER?NAMES[OTHER]:FAMN[who])+'. Only you can see it'); }
   lsSet('dc4_cart_mine',myCart); cartCount();
-  document.querySelectorAll('[data-cart="'+id+'"]').forEach(function(b){ b.outerHTML=b.classList.contains('btn')?cartSheetBtn(id):cartBtn(id); });
+  document.querySelectorAll('[data-cart="'+id+'"]').forEach(function(b){ if(b.classList.contains('ib')) b.outerHTML=cartBtn(id); else if(b.classList.contains('cartsheet')) b.outerHTML=cartSheetBtn(id); });
   if(route==='mycart') render();
 }
+document.addEventListener('click',function(e){
+  var box=document.getElementById('cwho'); if(!box) return;
+  var t=e.target.closest('[data-cwpick]');
+  if(t){ e.stopPropagation(); var id=box._id; box.remove(); cartSet(id,t.getAttribute('data-cwpick')); return; }
+  if(e.target.closest('[data-cwrm]')){ e.stopPropagation(); var id2=box._id; box.remove(); cartSet(id2,null); return; }
+  if(e.target.closest('[data-cwclose]')&&!e.target.closest('.cwbox')||e.target.closest('.cwact [data-cwclose]')){ e.stopPropagation(); box.remove(); }
+},true);
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){ var b=document.getElementById('cwho'); if(b) b.remove(); } });
 function rmToggle(id,el){
   var d=BY[id];
   if(dnb[id]){ delete dnb[id]; toast('Back on the site'); }
@@ -2907,30 +2970,50 @@ document.addEventListener('click',function(e){
   if(t){ e.preventDefault(); e.stopPropagation(); cartToggle(t.getAttribute('data-cart')); return; }
   t=e.target.closest('[data-rm]');
   if(t){ e.preventDefault(); e.stopPropagation(); rmToggle(t.getAttribute('data-rm'),t); return; }
-  t=e.target.closest('[data-cgot]');
-  if(t){ var id=t.getAttribute('data-cgot'); myCart.forEach(function(c){ if(c.id===id) c.got=!c.got; }); lsSet('dc4_cart_mine',myCart); cartCount(); render(); }
+  t=e.target.closest('[data-cst]');
+  if(t){ var pr=t.getAttribute('data-cst').split('|'); myCart.forEach(function(c){ if(c.id===pr[0]){ c.st=(c.st===pr[1]?null:pr[1]); delete c.got; } }); lsSet('dc4_cart_mine',myCart); cartCount(); render(); return; }
+  t=e.target.closest('[data-ctab]');
+  if(t){ cartTab=t.getAttribute('data-ctab'); render(); return; }
 },true);
-var FORN={sam:'Me',rachel:'Rachel',mom:'Mom',dad:'Dad',ben:'Ben',both:'Me'};
+var cartTab='all';
+function cartFor(c){ if(c['for']) return c['for']; var d=BY[c.id]; return cartGuess(d); }
 function vMyCart(){
   var items=myCart.filter(function(c){ return BY[c.id]; });
-  var open=items.filter(function(c){ return !c.got; }), tot=0, sv=0;
+  var h='<section class="phead"><div class="ptitle"><h1>My cart</h1><p class="pblurb">What you plan to buy, sorted by who it is for. Only you can see this, '+esc(NAMES[OTHER])+' never does, and it follows you to every device.</p></div></section>';
+  if(!items.length) return h+'<div class="empty"><strong>Your cart is empty</strong><span>Tap the cart button on any deal and pick who it is for.</span><button class="btn sec" data-go="all">Browse all deals</button></div>';
+  var tabs=[['all','All']].concat(cartWhoList().map(function(w){ return [w[0],w[0]===ME?'For me':'🎁 Gifts for '+w[1]]; }));
+  var cnt=function(k){ return items.filter(function(c){ return k==='all'||cartFor(c)===k; }).length; };
+  tabs=tabs.filter(function(t){ return t[0]==='all'||cnt(t[0]); });
+  if(!tabs.some(function(t){ return t[0]===cartTab; })) cartTab='all';
+  h+='<nav class="subnav" aria-label="Cart sections"><div class="subwrap">'+tabs.map(function(t){ return '<button class="subt'+(cartTab===t[0]?' on':'')+'" data-ctab="'+t[0]+'">'+t[1]+' <span class="n">'+cnt(t[0])+'</span></button>'; }).join('')+'</div></nav>';
+  var list=items.filter(function(c){ return cartTab==='all'||cartFor(c)===cartTab; });
+  var open=list.filter(function(c){ return !c.st; }), tot=0, sv=0, bought=0;
   open.forEach(function(c){ var d=BY[c.id]; tot+=d.price||0; sv+=d.saved$||0; });
-  var h='<section class="phead"><div class="ptitle"><h1>My cart</h1><p class="pblurb">Things you plan to buy. Only you can see this, '+esc(NAMES[OTHER])+' never does.</p></div></section>';
-  if(!items.length) return h+'<div class="empty"><strong>Your cart is empty</strong><span>Tap the cart button on any deal to add it here.</span><button class="btn sec" data-go="all">Browse all deals</button></div>';
-  h+='<div class="mctot"><span><b>'+money(Math.round(tot*100)/100)+'</b> total</span><span><b>'+money(Math.round(sv))+'</b> saved</span><span><b>'+open.length+'</b> to buy</span></div>';
-  var groups={}; items.forEach(function(c){ var w=FORN[BY[c.id].who]||'Other'; (groups[w]=groups[w]||[]).push(c); });
-  ['Me','Rachel','Mom','Dad','Ben','Other'].forEach(function(g){
-    if(!groups[g]) return;
-    h+='<section class="sec"><div class="sech"><div><h2>'+(g==='Me'?'For me':'For '+g)+'</h2></div></div><div class="mcwrap">';
-    groups[g].forEach(function(c){ var d=BY[c.id];
-      h+='<div class="mcrow'+(c.got?' got':'')+'">'+thumb(d)+'<div class="mci"><div class="bl">'+esc(d.brand||'')+' · '+esc(d.store||'')+'</div><a class="nm" data-qv="'+d.id+'">'+esc(dname(d))+'</a><div class="pr">'+priceHtml(d)+'</div></div>'+
-        '<div class="mcb"><a class="btn pri sm" href="'+esc(d.url)+'" target="_blank" rel="noopener">Buy</a><button class="btn sec sm" data-cgot="'+d.id+'">'+(c.got?'Undo':'Bought')+'</button><button class="btn sec sm" data-cart="'+d.id+'">Remove</button></div></div>';
-    });
-    h+='</div></section>';
-  });
+  list.forEach(function(c){ if(c.st==='bought') bought+=BY[c.id].price||0; });
+  h+='<div class="svstats"><div class="svstat"><b>'+open.length+'</b><span>still to buy</span></div><div class="svstat"><b>'+money(Math.round(tot))+'</b><span>left to spend</span></div><div class="svstat"><b>'+money(Math.round(sv))+'</b><span>saved vs full price</span></div>'+(bought?'<div class="svstat"><b>'+money(Math.round(bought))+'</b><span>already bought</span></div>':'')+'</div>';
+  list.sort(function(a,b){ return (a.st?1:0)-(b.st?1:0); });
+  h+='<div class="mcwrap">'+list.map(function(c){ var d=BY[c.id], w=cartFor(c), wn=w===ME?'Me':(w===OTHER?NAMES[OTHER]:FAMN[w]||'Me');
+    return '<div class="mcrow'+(c.st?' got':'')+'">'+thumb(d)+'<div class="mci"><div class="bl">'+esc(d.brand||'')+' · '+esc(d.store||'')+(cartTab==='all'?' · <b class="mcfor">'+(w===ME?'For me':'For '+esc(wn))+'</b>':'')+(c.st?' · <b class="mcst '+c.st+'">'+(c.st==='bought'?'Bought':'Did not buy')+'</b>':'')+'</div><a class="nm" data-qv="'+d.id+'">'+esc(dname(d))+'</a><div class="pr">'+priceHtml(d)+'</div></div>'+
+      '<div class="mcb"><a class="btn pri sm" href="'+esc(d.url)+'" target="_blank" rel="noopener">Buy</a><button class="btn sec sm'+(c.st==='bought'?' on':'')+'" data-cst="'+d.id+'|bought">'+(c.st==='bought'?'✓ Bought':'Bought')+'</button><button class="btn sec sm'+(c.st==='skip'?' on':'')+'" data-cst="'+d.id+'|skip">'+(c.st==='skip'?'✕ Did not buy':'Did not buy')+'</button><button class="btn sec sm" data-cart="'+d.id+'" title="Change who it is for or remove">Edit</button><button class="btn sec sm" data-cst-rm="'+d.id+'">Remove</button></div></div>'; }).join('')+'</div>';
   return h;
+};
+document.addEventListener('click',function(e){ var t=e.target.closest('[data-cst-rm]'); if(!t) return; e.stopPropagation(); cartSet(t.getAttribute('data-cst-rm'),null); },true);
+/* one time: gifts saved with the heart move into the private cart, hearts become my own likes */
+function migrateLikes(){
+  try{ if(localStorage.getItem('dc4_likes_mig_'+ME)) return; }catch(e){ return; }
+  var mine=[ME,'both'], moved=saved.filter(function(s){ return s&&mine.indexOf(s['for'])<0; });
+  if(moved.length){
+    moved.forEach(function(s){ if(!inCart(s.id)) myCart.push({id:s.id,'for':s['for'],t:Date.now()}); });
+    saved=saved.filter(function(s){ return s&&mine.indexOf(s['for'])>=0; });
+    lsSet('dc4_cart_mine',myCart); lsSet('dc4_saved',saved);
+    var sc=document.getElementById('savedCount'); if(sc) sc.textContent=saved.length; cartCount();
+    toast(moved.length+' gift'+(moved.length===1?'':'s')+' moved from Saved to your private cart');
+  }
+  try{ localStorage.setItem('dc4_likes_mig_'+ME,'1'); }catch(e){}
+  if(route==='saved'||route==='mycart') render();
 }
 setTimeout(cartCount,0);
+setTimeout(function(){ if(!SYNC.on||syncMeta.dc4_saved) migrateLikes(); },5000);
 
 /* Saved page with subtabs */
 var svTab=(function(){ try{ return sessionStorage.getItem('dc4_svtab')||'mine'; }catch(e){ return 'mine'; } })();
@@ -2941,7 +3024,7 @@ function svTile(s){
     '<div class="stb"><div class="stbl"><span>'+esc(d.brand||'')+'</span><span>'+esc(d.store||'')+'</span></div><div class="stn" data-qv="'+d.id+'">'+esc(dname(d))+'</div><div class="pr">'+priceHtml(d)+'</div>'+
     '<div class="stt"><label>Alert under $ <input class="tgt" data-id="'+d.id+'" type="number" min="0" step="1" value="'+(s.target||'')+'" aria-label="Target price"/></label>'+(hit?'<span class="hitb">Hit</span>':'')+'</div>'+
     (d.gone?'<span class="gone">Deal ended. Price may have changed</span>':'')+
-    '<div class="sta"><a href="'+esc(d.url)+'" target="_blank" rel="noopener">Buy</a><button data-svfor="'+d.id+'" title="Move to '+other+'">Move</button><button data-unsave="'+d.id+'">Remove</button></div></div></article>';
+    '<div class="sta"><a href="'+esc(d.url)+'" target="_blank" rel="noopener">Buy</a><button data-cart="'+d.id+'" title="Add to my cart">Cart</button><button data-unsave="'+d.id+'">Remove</button></div></div></article>';
 }
 function svStats(list){
   var tot=0,sv=0,hit=0; list.forEach(function(s){ var d=savedDeal(s); if(!d||d.gone) return; tot+=d.price||0; sv+=d.saved$||0; if(s.target&&d.price!=null&&d.price<=s.target) hit++; });
@@ -2955,13 +3038,14 @@ vSaved=function(){
   var theirs=SYNC.on?(SHARED.saved||[]).filter(function(s){ return s&&BY[s.id]; }):[];
   var rem=Object.keys(dnb).filter(function(id){ return BY[id]; }), no=Object.keys(SHARED.dnb||{}).filter(function(id){ return BY[id]; });
   var O=NAMES[OTHER]||'Rachel';
-  var tabs=[['mine',ME==='rachel'?'💗 My favorites':'❤️ My saves',mine.length],['gift','🔒 Gifts for '+O,gift.length]];
-  if(fam.length) tabs.push(['fam','👪 Family',fam.length]);
+  var tabs=[['mine','❤️ My likes',mine.length]];
+  if(gift.length) tabs.push(['gift','🔒 Old gift saves',gift.length]);
+  if(fam.length) tabs.push(['fam','👪 Old family saves',fam.length]);
   if(SYNC.on) tabs.push(['theirs','👀 '+O+'’s likes',theirs.length]);
   tabs.push(['rem','✕ Removed',rem.length]);
   if(no.length) tabs.push(['no','⛔ '+O+' says no',no.length]);
   if(!tabs.some(function(t){ return t[0]===svTab; })) svTab='mine';
-  var sub={mine:'Things you want. Set an alert price and the card turns green when it hits.',gift:'Gift ideas for '+O+'. Hidden from '+him(OTHER)+'.',fam:'Saved for Mom, Dad and Ben.',theirs:'What '+O+' has hearted. Gifts '+(OTHER==='rachel'?'she':'he')+' picked for you stay hidden.',rem:'Items you removed. Tap the X to bring one back.',no:O+' already has these or does not want them.'}[svTab];
+  var sub={mine:'Things you would love. '+O+' can see these, so think of it as a “you could get this for me” list. Set an alert price and the card turns green when it hits. Gifts for other people go in your cart.',gift:'Gift ideas for '+O+'. Hidden from '+him(OTHER)+'.',fam:'Saved for Mom, Dad and Ben.',theirs:'What '+O+' has hearted. Gifts '+(OTHER==='rachel'?'she':'he')+' picked for you stay hidden.',rem:'Items you removed. Tap the X to bring one back.',no:O+' already has these or does not want them.'}[svTab];
   var h='<section class="phead"><div class="ptitle"><h1>Saved</h1><p class="pblurb">'+sub+'</p><div class="memrow"><button class="btn sec sm" data-memexport="1">Export memory</button><button class="btn sec sm" data-memimport="1">Import memory</button><button class="btn sec sm" data-go="import">Import deals</button></div></div></section>';
   h+='<nav class="subnav" aria-label="Saved sections"><div class="subwrap">'+tabs.map(function(t){ return '<button class="subt'+(svTab===t[0]?' on':'')+'" data-svtab="'+t[0]+'">'+t[1]+' <span class="n">'+t[2]+'</span></button>'; }).join('')+'</div></nav>';
   var list={mine:mine,gift:gift,fam:fam}[svTab];
